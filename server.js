@@ -4,6 +4,7 @@ const cookieParser=require('cookie-parser');
 const connectDB = require('./config/db');
 const mongoSanitize=require('express-mongo-sanitize');
 const helmet=require('helmet');
+const {xss}=require('express-xss-sanitizer');
 
 //Load env vars
 dotenv.config({path:'./config/config.env'});
@@ -28,6 +29,9 @@ app.use(mongoSanitize());
 
 //Set security headers
 app.use(helmet());
+
+//Prevent XSS attacks
+app.use(xss());
 
 app.use('/api/v1/co-working-spaces',coWorkingSpaces);
 app.use('/api/v1/auth',auth);
