@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const cookieParser=require('cookie-parser');
 const connectDB = require('./config/db');
 const mongoSanitize=require('express-mongo-sanitize');
+const helmet=require('helmet');
 
 //Load env vars
 dotenv.config({path:'./config/config.env'});
@@ -24,6 +25,9 @@ app.use(cookieParser());
 
 //Sanitize data
 app.use(mongoSanitize());
+
+//Set security headers
+app.use(helmet());
 
 app.use('/api/v1/co-working-spaces',coWorkingSpaces);
 app.use('/api/v1/auth',auth);
