@@ -1,10 +1,10 @@
-const Hospital=require('../models/Hospital');
-const Appointment=require('../models/Appointment.js');
+const CoWorkingSpace=require('../models/CoWorkingSpace.js');
+const Reservation=require('../models/Reservation.js');
 
-//@desc     Get all hospitals
-//@route    GET /api/v1/hospitals
+//@desc     Get all co-working spaces
+//@route    GET /api/v1/co-working-spaces
 //@access   Public 
-exports.getHospitals=async(req,res,next)=>{
+exports.getCoWorkingSpaces=async(req,res,next)=>{
     let query;
 
     //Copy req.query
@@ -24,7 +24,7 @@ exports.getHospitals=async(req,res,next)=>{
     queryStr=queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match=>`$${match}`);
 
     //Finding resource
-    query=Hospital.find(JSON.parse(queryStr)).populate('appointments');
+    query=CoWorkingSpace.find(JSON.parse(queryStr)).populate('reservations');
 
     //Select Fields
     if(req.query.select){
@@ -45,13 +45,13 @@ exports.getHospitals=async(req,res,next)=>{
     const limit=parseInt(req.query.limit,10)||25;
     const startIndex=(page-1)*limit;
     const endIndex=page*limit;
-    const total=await Hospital.countDocuments();
+    const total=await CoWorkingSpace.countDocuments();
 
     query=query.skip(startIndex).limit(limit);
 
     //Executing query
     try{
-        const hospitals=await query;
+        const coWorkingSpaces=await query;
         //Pagination result
         const pagination={};
 
@@ -67,7 +67,7 @@ exports.getHospitals=async(req,res,next)=>{
                 limit
             }
         }
-        res.status(200).json({success:true,count:hospitals.length,pagination,data:hospitals});
+        res.status(200).json({success:true,count:coWorkingSpaces.length,pagination,data:coWorkingSpaces});
     } catch(err){
         console.log(err);
 
@@ -75,66 +75,66 @@ exports.getHospitals=async(req,res,next)=>{
     }
 };
 
-//@desc     Get single hospital
-//@route    GET /api/v1/hospitals/:id
+//@desc     Get single co-working space
+//@route    GET /api/v1/co-working-spaces/:id
 //@access   Public 
-exports.getHospital=async(req,res,next)=>{
+exports.getCoWorkingSpace=async(req,res,next)=>{
     try{
-        const hospital = await Hospital.findById(req.params.id);
+        const coWorkingSpace = await CoWorkingSpace.findById(req.params.id);
 
-        if(!hospital){
+        if(!coWorkingSpace){
             return res.status(400).json({success:false});
         }
 
-        res.status(200).json({success:true,data:hospital});
+        res.status(200).json({success:true,data:coWorkingSpace});
     }catch(err){
         res.status(400).json({success:false});
     }
 };
 
-//@desc     Create a hospital
-//@route    POST /api/v1/hospitals
+//@desc     Create a co-working space
+//@route    POST /api/v1/co-working-spaces
 //@access   Private
-exports.createHospital=async(req,res,next)=>{
-    const hospital =await Hospital.create(req.body);
+exports.createCoWorkingSpace=async(req,res,next)=>{
+    const coWorkingSpace =await CoWorkingSpace.create(req.body);
     res.status(201).json({
         success:true,
-        data:hospital
+        data:coWorkingSpace
     });
 };
 
-//@desc     Update single hospital
-//@route    PUT /api/v1/hospitals/:id
+//@desc     Update single co-working space
+//@route    PUT /api/v1/co-working-spaces/:id
 //@access   Private
-exports.updateHospital=async(req,res,next)=>{
+exports.updateCoWorkingSpace=async(req,res,next)=>{
     try{
-        const hospital = await Hospital.findByIdAndUpdate(req.params.id,req.body,{
+        const coWorkingSpace = await CoWorkingSpace.findByIdAndUpdate(req.params.id,req.body,{
             new: true,
             runValidator:true
         });
     
-        if(!hospital){
+        if(!coWorkingSpace){
             return res.status(400).json({successs:false});
         }
 
-        res.status(200).json({success:true,data:hospital});
+        res.status(200).json({success:true,data:coWorkingSpace});
     }catch(err){
         res.status(400).json({success:false});
     }
 };
 
-//@desc     Delete single hospital
-//@route    DELETE /api/v1/hospitals/:id
+//@desc     Delete single co-working space
+//@route    DELETE /api/v1/co-working-spaces/:id
 //@access   Private
-exports.deleteHospital=async(req,res,next)=>{
+exports.deleteCoWorkingSpace=async(req,res,next)=>{
     try{
-        const hospital = await Hospital.findById(req.params.id);
+        const coWorkingSpace = await CoWorkingSpace.findById(req.params.id);
 
-        if(!hospital){
-            return res.status(404).json({success:false,message:`Hospital not found with id of ${req.params.id}`});
+        if(!coWorkingSpace){
+            return res.status(404).json({success:false,message:`Co-working space not found with id of ${req.params.id}`});
         }
-        await Appointment.deleteMany({hospital:req.params.id});
-        await Hospital.deleteOne({_id:req.params.id});
+        await Reservation.deleteMany({coWorkingSpace:req.params.id});
+        await CoWorkingSpace.deleteOne({_id:req.params.id});
 
         res.status(200).json({success:true,data: {}});
     }catch(err){

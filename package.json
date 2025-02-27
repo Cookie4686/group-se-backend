@@ -1,7 +1,7 @@
 {
-  "name": "a4pnt90110",
+  "name": "agraven",
   "version": "1.0.0",
-  "description": "[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/0yK2PP-x)",
+  "description": "",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/2110503CEDT67/a-4-pnt90110.git"
+    "url": "git+https://github.com/2110503-2564/project-raven.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/2110503CEDT67/a-4-pnt90110/issues"
+    "url": "https://github.com/2110503-2564/project-raven/issues"
   },
-  "homepage": "https://github.com/2110503CEDT67/a-4-pnt90110#readme",
+  "homepage": "https://github.com/2110503-2564/project-raven#readme",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
@@ -26,7 +26,7 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.13.1",
-    "mongoose": "^8.10.1"
+    "mongoose": "^8.11.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"
