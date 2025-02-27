@@ -5,6 +5,7 @@ const connectDB = require('./config/db');
 const mongoSanitize=require('express-mongo-sanitize');
 const helmet=require('helmet');
 const {xss}=require('express-xss-sanitizer');
+const rateLimit=require('express-rate-limit');
 
 //Load env vars
 dotenv.config({path:'./config/config.env'});
@@ -32,6 +33,13 @@ app.use(helmet());
 
 //Prevent XSS attacks
 app.use(xss());
+
+//Rate Limiting
+const limiter=rateLimit({
+    windowsMs:10*60*1000,//10 mins
+    max:80
+});
+app.use(limiter);
 
 app.use('/api/v1/co-working-spaces',coWorkingSpaces);
 app.use('/api/v1/auth',auth);
