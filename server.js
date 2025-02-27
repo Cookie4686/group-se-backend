@@ -6,6 +6,7 @@ const mongoSanitize=require('express-mongo-sanitize');
 const helmet=require('helmet');
 const {xss}=require('express-xss-sanitizer');
 const rateLimit=require('express-rate-limit');
+const hpp=require('hpp');
 
 //Load env vars
 dotenv.config({path:'./config/config.env'});
@@ -40,6 +41,9 @@ const limiter=rateLimit({
     max:80
 });
 app.use(limiter);
+
+//Prevent http param pollutions
+app.use(hpp());
 
 app.use('/api/v1/co-working-spaces',coWorkingSpaces);
 app.use('/api/v1/auth',auth);
