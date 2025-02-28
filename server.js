@@ -7,6 +7,7 @@ const helmet=require('helmet');
 const {xss}=require('express-xss-sanitizer');
 const rateLimit=require('express-rate-limit');
 const hpp=require('hpp');
+const cors=require('cors');
 
 //Load env vars
 dotenv.config({path:'./config/config.env'});
@@ -44,6 +45,9 @@ app.use(limiter);
 
 //Prevent http param pollutions
 app.use(hpp());
+
+//Enable CORS
+app.use(cors());
 
 app.use('/api/v1/co-working-spaces',coWorkingSpaces);
 app.use('/api/v1/auth',auth);
