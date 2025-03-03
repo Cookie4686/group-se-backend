@@ -28,9 +28,9 @@ const CoWorkingSpaceSchema = new mongoose.Schema({
     tel:{
         type: String
     },
-    region:{
+    open_close_time:{
         type: String,
-        required: [true,'Please add a region'],
+        required: [true,'Please add open-close time'],
     }
 }, {
         toJSON: {virtuals:true},
