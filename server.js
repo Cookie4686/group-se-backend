@@ -74,6 +74,10 @@ const swaggerDocs = swaggerJsDoc(swaggerOptions);
 // Swagger UI Middleware
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
+//Add the root route handler here
+app.get('/', (req, res) => {
+    res.send('Co-Working Space API is running!'); // Or any response you want
+});
 
 app.use('/api/v1/co-working-spaces',coWorkingSpaces);
 app.use('/api/v1/auth',auth);
