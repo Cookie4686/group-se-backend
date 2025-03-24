@@ -8,6 +8,8 @@ const {xss}=require('express-xss-sanitizer');
 const rateLimit=require('express-rate-limit');
 const hpp=require('hpp');
 const cors=require('cors');
+const swaggerUI = require('swagger-ui-express');
+const swaggerJsDoc = require('swagger-jsdoc');
 
 //Load env vars
 dotenv.config({path:'./config/config.env'});
@@ -48,6 +50,30 @@ app.use(hpp());
 
 //Enable CORS
 app.use(cors());
+
+// Swagger Options
+const swaggerOptions = {
+    swaggerDefinition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'Co-Working Space API',
+            version: '1.0.0',
+            description: 'API for Co-Working Space Reservations',
+        },
+        servers: [
+            {
+                url: 'http://localhost:5000/api/v1',
+            },
+        ],
+    },
+    apis: ['./routes/*.js'],
+};
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+
+// Swagger UI Middleware
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
+
 
 app.use('/api/v1/co-working-spaces',coWorkingSpaces);
 app.use('/api/v1/auth',auth);

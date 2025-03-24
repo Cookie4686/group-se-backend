@@ -31,6 +31,10 @@ const CoWorkingSpaceSchema = new mongoose.Schema({
     open_close_time:{
         type: String,
         required: [true,'Please add open-close time'],
+    },
+    picture:{
+        type: String,
+        required: [false],
     }
 }, {
         toJSON: {virtuals:true},
