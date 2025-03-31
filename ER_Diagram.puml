@@ -1,0 +1,45 @@
+@startuml ER_Diagram
+
+skinparam Linetype ortho
+
+entity User {
+  * _id: ObjectId
+  --
+  * name: string
+  * telephone_number: string
+  * email: string <<unique>>
+  * role: string 
+  * password: string
+  --
+  resetPasswordToken: string
+  resetPasswordExpire: Date
+  createdAt: Date
+}
+
+entity CoWorkingSpace {
+  * _id: ObjectId
+  --
+  * name: string <<unique>>
+  * address: string
+  * district: string
+  * province: string
+  * postalcode: string
+  tel: string
+  open_close_time: string
+  picture: string
+}
+
+entity Reservation {
+  * _id: ObjectId
+  --
+  * apptDate: Date
+  * user: ObjectId <<fk>>
+  * coWorkingSpace: ObjectId <<fk>>
+  --
+  createdAt: Date
+}
+
+User ||..o{ Reservation
+CoWorkingSpace ||..o{ Reservation
+
+@enduml
