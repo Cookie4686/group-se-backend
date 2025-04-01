@@ -1,5 +1,5 @@
+const mongoose = require("mongoose");
 const User = require("../models/User");
-
 //@desc     Register user
 //@route    GET /api/v1/auth/register
 //@access   Public

@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const CoWorkingSpace = require("../models/CoWorkingSpace.js");
 const Reservation = require("../models/Reservation.js");
 

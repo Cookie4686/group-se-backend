@@ -1,7 +1,8 @@
 require("dotenv").config();
+const mongoose = require("mongoose");
+mongoose.set("strictQuery", true);
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const connectDB = require("../config/db");
 const mongoSanitize = require("express-mongo-sanitize");
 const helmet = require("helmet");
 const { xss } = require("express-xss-sanitizer");
@@ -10,9 +11,6 @@ const hpp = require("hpp");
 const cors = require("cors");
 const swaggerUI = require("swagger-ui-express");
 const swaggerJsDoc = require("swagger-jsdoc");
-
-//Connect to database
-connectDB();
 
 //Route files
 const coWorkingSpaces = require("../routes/co-working-spaces");
