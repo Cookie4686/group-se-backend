@@ -1,6 +1,12 @@
 import { CWS } from "./libs/db/models/CoworkingSpace";
 
-const protectedPages = ["/profile", "/coworking-space/.*/edit", "/reservations.*", "/dashboard.*"];
+const protectedPages = [
+  "/profile",
+  "/banIssue",
+  "/coworking-space/.*/edit",
+  "/reservations.*",
+  "/dashboard.*",
+];
 const protectedPathnameRegex = RegExp(`^(${protectedPages.flatMap((p) => p).join("|")})/?$`, "i");
 export function isProtectedPage(pathname: string) {
   return protectedPathnameRegex.test(pathname);

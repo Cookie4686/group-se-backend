@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { getCoworkingSpace } from "@/libs/coworkingSpace";
 import ReserveForm from "./ReserveForm";
 import DetailBody from "./DetailBody";
+import { checkBanAPI } from "@/libs/api/checkBan";
 
 export default async function CoworkingSpaceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -31,10 +32,13 @@ export default async function CoworkingSpaceDetailPage({ params }: { params: Pro
         </div>
         <section className="p-4">
           {session ?
-            <>
-              <h2 className="text-center text-xl">Reserve {coworkingSpace.name}</h2>
-              <ReserveForm id={id} />
-            </>
+            (await checkBanAPI(session.user.id)).isBanned ?
+              <span>You cannot reserve because you are ban</span>
+            : <>
+                <h2 className="text-center text-xl">Reserve {coworkingSpace.name}</h2>
+                <ReserveForm id={id} />
+              </>
+
           : <div className="mt-2 mb-2 text-center text-lg">
               <Link className="hover:text-cyan-600" href={`/login?callbackUrl=/coworking-space/${id}`}>
                 Login to reserve

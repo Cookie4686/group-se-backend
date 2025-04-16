@@ -14,7 +14,7 @@ export default function DateTimeField({
   name: string;
   label?: string;
   defaultValue?: string | null;
-  helperText?: string;
+  helperText?: string | null;
 }) {
   const [date, setDate] = useState<Dayjs | null>((defaultValue && dayjs(defaultValue)) || null);
 
