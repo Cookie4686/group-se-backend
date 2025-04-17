@@ -20,7 +20,7 @@ import OptionButton from "./OptionButton";
 import FilterDialog from "./FilterDialog";
 import DateCell from "./DateCell";
 import { FilterQuery } from "mongoose";
-import { BanIssue } from "@/libs/db/models/BanIssue";
+import { BanIssueType } from "@/libs/db/models/BanIssue";
 
 export default async function BanIssueTable({
   searchParams,
@@ -34,7 +34,7 @@ export default async function BanIssueTable({
   const time = readSearchParams(searchParams, "time") || "";
   const resolve = readSearchParams(searchParams, "resolve") || "";
   // * Refactor this
-  const filter: FilterQuery<BanIssue> = {};
+  const filter: FilterQuery<BanIssueType> = {};
   if (time == "current") {
     filter.endDate = { $gte: new Date() };
   } else if (time == "past") {

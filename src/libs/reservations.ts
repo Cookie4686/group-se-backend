@@ -7,7 +7,7 @@ import { auth } from "@/auth";
 import dbConnect from "./db/dbConnect";
 import Reservation, { type Reservation as ReservationType } from "./db/models/Reservation";
 import { CWS } from "./db/models/CoworkingSpace";
-import { User } from "./db/models/User";
+import { UserType } from "./db/models/User";
 import mongoose from "mongoose";
 
 export async function getReservations(
@@ -27,7 +27,7 @@ export async function getReservations(
         try {
           const result = (
             await Reservation.aggregate<{
-              data: (ReservationType & { user: User; coworkingSpace: CWS })[];
+              data: (ReservationType & { user: UserType; coworkingSpace: CWS })[];
               total: number;
             }>([
               { $match: filter },

@@ -3,11 +3,12 @@
 import { z } from "zod";
 import { auth } from "@/auth";
 import dbConnect from "./db/dbConnect";
-import User, { User as UserType } from "./db/models/User";
-import BanIssue, { type BanIssue as BanIssueType } from "./db/models/BanIssue";
-import { revalidateTag, unstable_cache } from "next/cache";
+import User from "./db/models/User";
+import BanIssue, { type BanIssueType as BanIssueType } from "./db/models/BanIssue";
+import { revalidateTag } from "next/cache";
 import { FilterQuery } from "mongoose";
 import mongoose from "mongoose";
+import { getBanIssuesDB, getBanIssueDB } from "./db/banIssue";
 
 export async function getBanIssues(
   filter: FilterQuery<BanIssueType> = {},
@@ -16,55 +17,16 @@ export async function getBanIssues(
   search: string = ""
 ) {
   const session = await auth();
-  if (session) {
-    if (session.user.role != "admin")
-      filter.user = mongoose.Types.ObjectId.createFromHexString(session.user.id);
-    return await unstable_cache(
-      async () => {
-        await dbConnect();
-        try {
-          const result = (
-            await BanIssue.aggregate<{
-              data: (BanIssueType & { user: UserType; admin: UserType })[];
-              total: number;
-            }>([
-              { $match: filter },
-              {
-                $lookup: {
-                  from: "users",
-                  localField: "user",
-                  foreignField: "_id",
-                  as: "user",
-                  pipeline: [
-                    { $match: { $or: [{ name: { $regex: search } }, { email: { $regex: search } }] } },
-                  ],
-                },
-              },
-              { $lookup: { from: "users", localField: "admin", foreignField: "_id", as: "admin" } },
-              { $match: { user: { $not: { $size: 0 } } } },
-              { $set: { user: { $arrayElemAt: ["$user", 0] }, admin: { $arrayElemAt: ["$admin", 0] } } },
-              {
-                $set: {
-                  _id: { $toString: "$_id" },
-                  "user._id": { $toString: "$user._id" },
-                  "admin._id": { $toString: "$admin._id" },
-                },
-              },
-              { $group: { _id: null, data: { $push: "$$ROOT" }, total: { $count: {} } } },
-              { $project: { _id: 0, data: { $slice: ["$data", 0, 5] }, total: 1 } },
-            ])
-          )[0];
-          const data = result?.data || [];
-          const total = result?.total || 0;
-          return { success: true, total, count: data.length, data };
-        } catch (err) {
-          console.error(err);
-        }
-        return { success: false };
-      },
-      [session.user.role, JSON.stringify(filter), page.toString(), limit.toString(), search],
-      { tags: ["banIssues"], revalidate: 300 }
-    )();
+  if (!session) return { success: false, message: "unauthorized" };
+  if (session.user.role != "admin")
+    filter.user = mongoose.Types.ObjectId.createFromHexString(session.user.id);
+  try {
+    const result = await getBanIssuesDB(filter, page, limit, search);
+    const data = result?.data || [];
+    const total = result?.total || 0;
+    return { success: true, total, count: data.length, data };
+  } catch (err) {
+    console.error(err);
   }
   return { success: false };
 }
@@ -72,28 +34,15 @@ export async function getBanIssues(
 export async function getBanIssue(id: string) {
   const session = await auth();
   if (session) {
-    return unstable_cache(
-      async () => {
-        await dbConnect();
-        try {
-          const banIssue = (
-            await BanIssue.findById(id).populate<{ user: UserType; admin: UserType }>(["user", "admin"])
-          )?.toObject();
-          if (banIssue) {
-            if (banIssue.user._id == session.user.id || session.user.role == "admin") {
-              return { success: true, data: banIssue };
-            }
-          } else {
-            return { success: false, message: "Ban Issue not found" };
-          }
-        } catch (error) {
-          console.log(error);
-        }
-        return { success: false };
-      },
-      [id, session.user.id, session.user.role],
-      { tags: ["banIssues"], revalidate: 450 }
-    )();
+    try {
+      const result = await getBanIssueDB(id);
+      if (!result) return { success: false, message: "Ban Issue not found" };
+      if (result.banIssue.user._id != session.user.id && session.user.role != "admin")
+        return { success: false, message: "No permission to view this ban issue" };
+      return { success: true, data: result };
+    } catch (error) {
+      console.log(error);
+    }
   }
   return { success: false };
 }

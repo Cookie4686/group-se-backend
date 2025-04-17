@@ -7,9 +7,9 @@ import clsx from "clsx";
 export default async function BanIssue({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const response = await getBanIssue(id);
-  if (!response.data) return <main>Cannot fetch data</main>;
+  if (!response.data) return <main>{response.message ? response.message : "Cannot fetch data"}</main>;
 
-  const { data: banIssue } = response;
+  const { banIssue, banAppeals } = response.data;
   const createdAt = new Date(banIssue.createdAt);
   const endDate = new Date(banIssue.endDate);
 
@@ -57,6 +57,11 @@ export default async function BanIssue({ params }: { params: Promise<{ id: strin
         </div>
         <section>
           <span>Appeals: </span>
+          {banAppeals.map((e) => (
+            <Link href={`/banIssue/${id}/${e._id}`} key={e._id}>
+              Appeal: {e.description}
+            </Link>
+          ))}
         </section>
         <Link className="flex items-center gap-4" href={`/banIssue`}>
           <ArrowLeftIcon width="1rem" height="1rem" strokeWidth="0.125rem" />

@@ -5,7 +5,7 @@ import { unstable_cache } from "next/cache";
 import { z } from "zod";
 import { auth, signIn, signOut } from "@/auth";
 import dbConnect from "@/libs/db/dbConnect";
-import User, { type User as UserType } from "@/libs/db/models/User";
+import User, { type UserType as UserType } from "@/libs/db/models/User";
 import { isProtectedPage } from "@/utils";
 import { FilterQuery, QueryOptions } from "mongoose";
 

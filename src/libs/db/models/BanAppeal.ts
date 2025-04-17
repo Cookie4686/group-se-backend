@@ -6,7 +6,7 @@ const comment = {
   createdAt: { type: Date, default: Date.now },
 } as const;
 
-type Comment = mongoose.InferRawDocType<typeof comment> & { _id: string; user: string };
+export type Comment = mongoose.InferRawDocType<typeof comment> & { _id: string; user: string };
 
 const schemaDefinition = {
   banIssue: { type: mongoose.Schema.ObjectId, ref: "BanIssue", required: true },
@@ -21,13 +21,12 @@ const schemaDefinition = {
   comment: [new mongoose.Schema<Comment>(comment)],
 } as const;
 
-export type BanAppeal = mongoose.InferRawDocType<typeof schemaDefinition> & {
+export type BanAppealType = mongoose.InferRawDocType<typeof schemaDefinition> & {
   _id: string;
   banIssue: string;
-  comment: Comment[];
 };
 
-const BanAppeal = new mongoose.Schema<BanAppeal>(schemaDefinition, {
+const BanAppeal = new mongoose.Schema<BanAppealType>(schemaDefinition, {
   toJSON: { virtuals: true },
   toObject: { virtuals: true, flattenObjectIds: true },
 });
