@@ -25,6 +25,13 @@ export async function getReservations(
       async () => {
         await dbConnect();
         try {
+          try {
+            new RegExp(search);
+          }catch(error){
+            if(error instanceof SyntaxError){
+              search = "^$."
+            }
+          }
           const result = (
             await Reservation.aggregate<{
               data: (ReservationType & { user: User; coworkingSpace: CWS })[];

@@ -7,12 +7,14 @@ import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { getUserList } from "@/libs/auth";
 import { User } from "@/libs/db/models/User";
+import AvatarIcon from "@/components/AvatarIcon";
 
 export default function UserSearch({ name }: { name: string }) {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState<readonly User[]>([]);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
+  const [displayName, setDisplayName] = useState<string|null>(null);
 
   const handleChange = useDebouncedCallback((email: string) => {
     setEmail(email);
@@ -36,39 +38,41 @@ export default function UserSearch({ name }: { name: string }) {
   };
 
   return (
-    <Autocomplete
-      sx={{ width: 300 }}
-      open={open}
-      onOpen={handleOpen}
-      onClose={handleClose}
-      isOptionEqualToValue={(option, value) => option._id === value._id}
-      getOptionLabel={(option) => option.email}
-      options={options}
-      loading={loading}
-      filterOptions={(x) => x}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          name={name}
-          label="search user by email"
-          onChange={(e) => {
-            if (email != e.currentTarget.value) {
-              handleChange(e.currentTarget.value);
-            }
-          }}
-          slotProps={{
-            input: {
-              ...params.InputProps,
-              endAdornment: (
-                <>
-                  {loading && <CircularProgress size={20} />}
-                  {params.InputProps.endAdornment}
-                </>
-              ),
-            },
-          }}
-        />
-      )}
-    />
+    <div className="flex flex-row flex-wrap gap-2 items-center">
+      <Autocomplete
+        sx={{ width: 300 }}
+        open={open}
+        onOpen={handleOpen}
+        onClose={handleClose}
+        isOptionEqualToValue={(option, value) => option._id === value._id}
+        getOptionLabel={(option) => option.email}
+        options={options}
+        loading={loading}
+        filterOptions={(x) => x}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            name={name}
+            label="search user by email"
+            onChange={(e) => {
+              if (email != e.currentTarget.value) {
+                handleChange(e.currentTarget.value);
+              }
+            }}
+            slotProps={{
+              input: {
+                ...params.InputProps,
+                endAdornment: (
+                  <>
+                    {loading && <CircularProgress size={20} />}
+                    {params.InputProps.endAdornment}
+                  </>
+                ),
+              },
+            }}
+          />
+        )}
+      />
+    </div>
   );
 }

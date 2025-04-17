@@ -12,6 +12,13 @@ export default async function CoworkingSpaceCatalog({
   page: number;
   limit: number;
 }) {
+  try {
+    new RegExp(search);
+  }catch(error){
+    if(error instanceof SyntaxError){
+      search = "^$."
+    }
+  }
   const response = await getCoworkingSpaces({ name: { $regex: search } }, page, limit);
   if (!response.data) return <span>Cannot fetch data</span>;
 

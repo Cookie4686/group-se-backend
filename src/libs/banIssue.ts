@@ -23,6 +23,13 @@ export async function getBanIssues(
       async () => {
         await dbConnect();
         try {
+          try {
+            new RegExp(search);
+          }catch(error){
+            if(error instanceof SyntaxError){
+              search = "^$."
+            }
+          }
           const result = (
             await BanIssue.aggregate<{
               data: (BanIssueType & { user: UserType; admin: UserType })[];
