@@ -99,6 +99,6 @@ export async function getBanIssueDB(id: string) {
       )[0];
     },
     undefined,
-    { tags: ["banIssues", `banIssue-${id}`], revalidate: 600 }
+    { tags: [`banIssues-${id}`], revalidate: 600 }
   )(id);
 }

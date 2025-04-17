@@ -99,6 +99,7 @@ export async function resolveBanIssue(id: string) {
     );
     if (banIssue) {
       revalidateTag("banIssues");
+      revalidateTag(`banIssues-${id}`);
       return { success: true, data: banIssue.toObject() };
     }
   } catch (err) {

@@ -1,9 +1,47 @@
-import mongoose from "mongoose";
+import mongoose, { FilterQuery } from "mongoose";
 import BanAppeal, { BanAppealType, Comment } from "./models/BanAppeal";
 import { BanIssueType } from "./models/BanIssue";
 import { UserType } from "./models/User";
 import { unstable_cache } from "next/cache";
 import dbConnect from "./dbConnect";
+
+export const getBanAppealsDB = unstable_cache(
+  // TODO: Add search & filtering
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async (filter: FilterQuery<BanAppealType> = {}, page: number, limit: number, search: string) => {
+    await dbConnect();
+    return (
+      await BanAppeal.aggregate<
+        | {
+            data: (Omit<Omit<BanAppealType, "comment">, "banIssue"> & {
+              banIssue: Omit<BanIssueType, "user"> & { user: UserType };
+            })[];
+            total: number;
+          }
+        | undefined
+      >([
+        { $match: filter },
+        { $project: { comment: 0 } },
+        { $lookup: { from: "banissues", localField: "banIssue", foreignField: "_id", as: "banIssue" } },
+        { $set: { banIssue: { $arrayElemAt: ["$banIssue", 0] } } },
+        { $lookup: { from: "users", localField: "banIssue.user", foreignField: "_id", as: "banIssue.user" } },
+        { $set: { "banIssue.user": { $arrayElemAt: ["$banIssue.user", 0] } } },
+        {
+          $set: {
+            _id: { $toString: "$_id" },
+            "banIssue._id": { $toString: "$banIssue._id" },
+            "banIssue.user._id": { $toString: "$banIssue.user._id" },
+            "banIssue.admin": { $toString: "$banIssue.admin" },
+          },
+        },
+        { $group: { _id: null, data: { $push: "$$ROOT" }, total: { $count: {} } } },
+        { $project: { _id: 0, data: { $slice: ["$data", page * limit, limit] }, total: 1 } },
+      ])
+    )[0];
+  },
+  undefined,
+  { tags: ["banAppeals"], revalidate: 300 }
+);
 
 export async function getBanAppealDB(id: string) {
   return unstable_cache(
@@ -60,6 +98,6 @@ export async function getBanAppealDB(id: string) {
       )[0];
     },
     undefined,
-    { tags: [`banAppeal-${id}`], revalidate: 450 }
+    { tags: [`banAppeals-${id}`], revalidate: 450 }
   )(id);
 }
