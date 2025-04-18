@@ -3,6 +3,7 @@ import { CWS } from "./libs/db/models/CoworkingSpace";
 const protectedPages = [
   "/profile",
   "/banIssue",
+  "/banAppeal",
   "/coworking-space/.*/edit",
   "/reservations.*",
   "/dashboard.*",

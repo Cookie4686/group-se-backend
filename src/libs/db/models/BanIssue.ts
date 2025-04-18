@@ -15,13 +15,13 @@ const schemaDefinition = {
   resolvedAt: { type: Date },
 } as const;
 
-export type BanIssue = mongoose.InferRawDocType<typeof schemaDefinition> & {
+export type BanIssueType = mongoose.InferRawDocType<typeof schemaDefinition> & {
   _id: string;
   user: string;
   admin: string;
 };
 
-const BanIssueSchema = new mongoose.Schema<BanIssue>(schemaDefinition, {
+const BanIssueSchema = new mongoose.Schema<BanIssueType>(schemaDefinition, {
   toJSON: { virtuals: true },
   toObject: { virtuals: true, flattenObjectIds: true },
 });

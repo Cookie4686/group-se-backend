@@ -6,15 +6,13 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import { getUserList } from "@/libs/auth";
-import { User } from "@/libs/db/models/User";
-import AvatarIcon from "@/components/AvatarIcon";
+import { UserType } from "@/libs/db/models/User";
 
 export default function UserSearch({ name }: { name: string }) {
   const [open, setOpen] = useState(false);
-  const [options, setOptions] = useState<readonly User[]>([]);
+  const [options, setOptions] = useState<readonly UserType[]>([]);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
-  const [displayName, setDisplayName] = useState<string|null>(null);
 
   const handleChange = useDebouncedCallback((email: string) => {
     setEmail(email);

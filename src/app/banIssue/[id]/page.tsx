@@ -1,15 +1,21 @@
 import Link from "next/link";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { getBanIssue } from "@/libs/banIssue";
+import { getBanIssue, resolveBanIssue } from "@/libs/banIssue";
 import AvatarIcon from "@/components/AvatarIcon";
 import clsx from "clsx";
+import OptionButton from "@/components/OptionButton";
+import { auth } from "@/auth";
+import { Button } from "@mui/material";
 
 export default async function BanIssue({ params }: { params: Promise<{ id: string }> }) {
+  const session = await auth();
+  if (!session) return <main>You are not logged in</main>;
+
   const { id } = await params;
   const response = await getBanIssue(id);
-  if (!response.data) return <main>Cannot fetch data</main>;
+  if (!response.data) return <main>{response.message ? response.message : "Cannot fetch data"}</main>;
 
-  const { data: banIssue } = response;
+  const { banIssue, banAppeals } = response.data;
   const createdAt = new Date(banIssue.createdAt);
   const endDate = new Date(banIssue.endDate);
 
@@ -28,6 +34,26 @@ export default async function BanIssue({ params }: { params: Promise<{ id: strin
                   )}
                 ></span>
                 <span>{banIssue.isResolved ? "Resolved" : "Not Resolved"}</span>
+                {session.user.role == "admin" && !banIssue.isResolved && (
+                  <OptionButton>
+                    <li>
+                      <form
+                        action={async () => {
+                          "use server";
+                          await resolveBanIssue(id);
+                        }}
+                      >
+                        <input type="text" name="id" value={banIssue._id} hidden readOnly />
+                        <button
+                          className="w-full cursor-pointer px-4 py-1.5 text-left hover:bg-gray-100"
+                          type="submit"
+                        >
+                          Resolve Ban
+                        </button>
+                      </form>
+                    </li>
+                  </OptionButton>
+                )}
               </div>
             </div>
             <div className="flex items-center gap-8">
@@ -56,7 +82,33 @@ export default async function BanIssue({ params }: { params: Promise<{ id: strin
           <span>Description: {banIssue.description}</span>
         </div>
         <section>
-          <span>Appeals: </span>
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-bold">Appeals</h2>
+            {session.user.id == banIssue.user._id && (
+              <Link href={`/banIssue/${id}/appeal`}>
+                <Button type="submit" color="primary" variant="text" size="small">
+                  + New
+                </Button>
+              </Link>
+            )}
+          </div>
+          {banAppeals.map((e, index) => (
+            <Link href={`/banIssue/${id}/${e._id}`} key={e._id}>
+              <div className="flex items-center gap-2">
+                <span
+                  className={clsx(
+                    "inline-block aspect-square h-2 w-2 justify-self-center rounded-full",
+                    e.resolveStatus == "pending" && "bg-amber-300",
+                    e.resolveStatus == "denied" && "bg-red-500",
+                    e.resolveStatus == "resolved" && "bg-green-500"
+                  )}
+                ></span>
+                <span>
+                  #{index + 1}: {e.description}
+                </span>
+              </div>
+            </Link>
+          ))}
         </section>
         <Link className="flex items-center gap-4" href={`/banIssue`}>
           <ArrowLeftIcon width="1rem" height="1rem" strokeWidth="0.125rem" />
