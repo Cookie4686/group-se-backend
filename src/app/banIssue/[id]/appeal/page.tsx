@@ -38,9 +38,9 @@ export default function CreateBanAppeal() {
           </Button>
           {state?.message && <span>{state.message}</span>}
         </form>
-        <Link className="flex items-center gap-4" href={`/dashboard/banIssue`}>
+        <Link className="flex items-center gap-4" href={`/banIssue/${id}`}>
           <ArrowLeftIcon width="1rem" height="1rem" strokeWidth="0.125rem" />
-          <span>View Ban Issues</span>
+          <span>View Ban Issue</span>
         </Link>
       </div>
     </main>

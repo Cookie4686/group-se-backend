@@ -33,10 +33,11 @@ export default function OptionButton({ banIssue, session }: { banIssue: BanIssue
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
+        onClick={handleClose}
         transformOrigin={{ horizontal: "center", vertical: "top" }}
         anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
       >
-        <li onClick={handleClose}>
+        <li>
           <Link
             className="inline-block w-full px-4 py-1.5 hover:bg-gray-100"
             href={`/banIssue/${banIssue._id}`}
@@ -45,7 +46,7 @@ export default function OptionButton({ banIssue, session }: { banIssue: BanIssue
           </Link>
         </li>
         {session.user.id == banIssue.user._id && (
-          <li onClick={handleClose}>
+          <li>
             <Link
               className="inline-block w-full px-4 py-1.5 hover:bg-gray-100"
               href={`/banIssue/${banIssue._id}/appeal`}

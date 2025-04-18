@@ -1,11 +1,16 @@
 import Link from "next/link";
 import clsx from "clsx";
+import { auth } from "@/auth";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { getBanAppeal } from "@/libs/banAppeal";
-import CommentForm from "./CommentForm";
+import { getBanAppeal, resolveBanAppeal } from "@/libs/banAppeal";
 import AvatarIcon from "@/components/AvatarIcon";
+import OptionButton from "@/components/OptionButton";
+import CommentForm from "./CommentForm";
 
 export default async function BanAppeal({ params }: { params: Promise<{ id: string; appeal: string }> }) {
+  const session = await auth();
+  if (!session) return <main>You are not logged in</main>;
+
   const { appeal } = await params;
   const response = await getBanAppeal(appeal);
   if (!response.data) return <main>Cannot fetch data</main>;
@@ -30,6 +35,31 @@ export default async function BanAppeal({ params }: { params: Promise<{ id: stri
                   )}
                 ></span>
                 <span>{banIssue.isResolved ? "Resolved" : "Not Resolved"}</span>
+                {session.user.role == "admin" && banAppeal.resolveStatus == "pending" && (
+                  <OptionButton>
+                    {[
+                      { text: "Approve", action: resolveBanAppeal.bind(undefined, appeal, "resolved") },
+                      { text: "Deny", action: resolveBanAppeal.bind(undefined, appeal, "denied") },
+                    ].map(({ text, action }) => (
+                      <li key={text}>
+                        <form
+                          action={async () => {
+                            "use server";
+                            await action();
+                          }}
+                        >
+                          <input type="text" name="id" value={banAppeal._id} hidden readOnly />
+                          <button
+                            className="w-full cursor-pointer px-4 py-1.5 text-left hover:bg-gray-100"
+                            type="submit"
+                          >
+                            {text}
+                          </button>
+                        </form>
+                      </li>
+                    ))}
+                  </OptionButton>
+                )}
               </div>
             </div>
             <div className="flex w-fit gap-4">
