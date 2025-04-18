@@ -20,6 +20,13 @@ export async function getBanIssues(
   if (!session) return { success: false, message: "unauthorized" };
   if (session.user.role != "admin")
     filter.user = mongoose.Types.ObjectId.createFromHexString(session.user.id);
+  try{
+    new RegExp(search);
+  }catch(error){
+    if(error instanceof SyntaxError){
+      search = "^$.";
+    }
+  }
   try {
     const result = await getBanIssuesDB(filter, page, limit, search);
     const data = result?.data || [];
