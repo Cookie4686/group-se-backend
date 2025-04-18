@@ -7,7 +7,7 @@ import { Button, TextField } from "@mui/material";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { createBanIssue } from "@/libs/banIssue";
 import DateTimeField from "@/components/DateTimeField";
-import UserSearch from "./UserSearch";
+import UserSearch from "@/components/UserSearch";
 
 export default function CreateBanIssue() {
   const [state, action, pending] = useActionState(createBanIssue, undefined);
@@ -24,7 +24,7 @@ export default function CreateBanIssue() {
       <h1 className="text-center text-2xl font-bold">Issue a ban</h1>
       <div className="mx-auto max-w-5xl rounded-3xl border p-8">
         <form className="mb-8 flex w-full flex-col gap-8" action={action}>
-          <UserSearch name="user" />
+          <UserSearch name="user" label="Search user" />
           {(["title", "description"] as const).map((e) => (
             <TextField
               key={e}

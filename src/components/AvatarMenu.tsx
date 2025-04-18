@@ -83,16 +83,16 @@ export default function AvatarMenu({ session }: { session: Session | null }) {
               <NoSymbolIcon width={16} height={16} />
               Ban Issues
             </LinkItem>,
-            session.user.role == "admin" && [
+            session.user.role == "admin" && (
               <LinkItem href="/banAppeal" handleClose={handleClose} key="banAppeal">
                 <ScaleIcon width={16} height={16} />
                 Ban Appeal
-              </LinkItem>,
-              <LinkItem href="/dashboard" handleClose={handleClose} key="dashboard">
-                <ComputerDesktopIcon width={16} height={16} />
-                Dashboard
-              </LinkItem>,
-            ],
+              </LinkItem>
+            ),
+            <LinkItem href="/dashboard" handleClose={handleClose} key="dashboard">
+              <ComputerDesktopIcon width={16} height={16} />
+              Dashboard
+            </LinkItem>,
             <li onClick={handleClose} key="logout">
               <form action={userLogout.bind(undefined, pathname)}>
                 <button

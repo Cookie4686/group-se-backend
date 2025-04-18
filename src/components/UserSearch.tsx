@@ -8,7 +8,7 @@ import { useDebouncedCallback } from "use-debounce";
 import { getUserList } from "@/libs/auth";
 import { UserType } from "@/libs/db/models/User";
 
-export default function UserSearch({ name }: { name: string }) {
+export default function UserSearch({ name, label }: { name: string; label?: string }) {
   const [open, setOpen] = useState(false);
   const [options, setOptions] = useState<readonly UserType[]>([]);
   const [loading, setLoading] = useState(false);
@@ -50,7 +50,7 @@ export default function UserSearch({ name }: { name: string }) {
         <TextField
           {...params}
           name={name}
-          label="search user by email"
+          label={label}
           onChange={(e) => {
             if (email != e.currentTarget.value) {
               handleChange(e.currentTarget.value);
