@@ -20,6 +20,8 @@ package MainSystem {
   entity CoworkingSpace {
     * _id: ObjectId
     --
+    * owner: ObjectId <<fk>>
+    --
     * name: string <<unique>>
     * description: string
     * openTime: DateTime
@@ -74,13 +76,22 @@ package BanSystem {
     --
     * description: string
     * createdAt: Date
-    * comment: {user: ObjectId, text: string, createdAt: Date}[]
+    * comment: Comment[]
     * resolveStatus: pending | denied | resolved
     resolvedAt: Date
   }
 
+  entity Comment {
+    * _id: ObjectId
+    --
+    * user: ObjectId
+    * text: string
+    * createdAt: Date
+  }
+
   User ||..o{ BanIssue
   BanIssue ||..o{ BanAppeal
+  BanAppeal [comment] *- "0..*" Comment
 }
 
 @enduml
