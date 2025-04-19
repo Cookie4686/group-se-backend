@@ -66,6 +66,9 @@ export async function createBanIssue(formState: unknown, formData: FormData) {
   const data = Object.fromEntries(formData.entries());
   const validatedFields = await BanIssueSchema.safeParseAsync(data);
   if (validatedFields.success) {
+    if(new Date(validatedFields.data.endDate) <= new Date(Date.now())){
+      return { success: false, message: "You cannot pick time in the past"}
+    }
     await dbConnect();
     try {
       const user = await User.findOne({ email: validatedFields.data.user });
@@ -75,7 +78,7 @@ export async function createBanIssue(formState: unknown, formData: FormData) {
         endDate: { $gt: new Date() },
         isResolved: false,
       });
-      if (isBanned) return { success: false, message: "user is already banned", data };
+      if (isBanned > 0) return { success: false, message: "user is already banned", data };
 
       const banIssue = await BanIssue.insertOne({
         ...validatedFields.data,
@@ -113,4 +116,14 @@ export async function resolveBanIssue(id: string) {
     console.error(err);
   }
   return { success: false };
+}
+
+export async function resolveExpiredBan() {
+  try {
+    await dbConnect();
+    await BanIssue.updateMany({isResolved: false, endDate: {$lte: Date.now()}},[{$set: {isResolved: true, resolvedAt: "$endDate"}}]);
+    return { success: true };
+  } catch (error) {
+    return { success: false , message: error};
+  }
 }

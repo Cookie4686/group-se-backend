@@ -35,6 +35,7 @@ export default function CreateBanIssue() {
               error={!!state?.error?.fieldErrors[e]}
               helperText={state?.error?.fieldErrors[e]?.join() || null}
               defaultValue={(state?.data && state.data[e]) || null}
+              required
             />
           ))}
           <DateTimeField
@@ -42,13 +43,14 @@ export default function CreateBanIssue() {
             label="End Date"
             helperText={state?.error?.fieldErrors.endDate?.join() || null}
             defaultValue={state?.data?.endDate.toString() || null}
+            minDateTime={new Date(Date.now())}
           />
           <Button variant="contained" type="submit" disabled={pending}>
             Issue Ban
           </Button>
-          {state?.message && <span>{state.message}</span>}
+          {state?.message && <div className="w-full text-center text-red-600">{state.message}</div>}
         </form>
-        <Link className="flex items-center gap-4" href={`/dashboard/banIssue`}>
+        <Link className="flex items-center gap-4" href={`/banIssue`}>
           <ArrowLeftIcon width="1rem" height="1rem" strokeWidth="0.125rem" />
           <span>View Ban Issues</span>
         </Link>

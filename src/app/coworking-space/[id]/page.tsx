@@ -59,7 +59,7 @@ export default async function CoworkingSpaceDetailPage({ params }: { params: Pro
         <section className="p-4">
           {session ?
             (await checkBanAPI(session.user.id)).isBanned ?
-              <span>You cannot reserve because you are ban</span>
+              <span>You cannot reserve because you are banned</span>
             : <>
                 <h2 className="text-center text-xl">Reserve {coworkingSpace.name}</h2>
                 <ReserveForm id={id} />

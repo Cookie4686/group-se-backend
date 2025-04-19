@@ -11,7 +11,7 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { getBanIssues } from "@/libs/banIssue";
+import { getBanIssues, resolveExpiredBan } from "@/libs/banIssue";
 import { readPaginationSearchParams, readSearchParams } from "@/utils";
 import AvatarIcon from "@/components/AvatarIcon";
 import SearchFieldSP from "@/components/SearchFieldSP";
@@ -45,6 +45,7 @@ export default async function BanIssueTable({
   } else if (resolve == "no") {
     filter.isResolved = false;
   }
+  await resolveExpiredBan();
   const response = await getBanIssues(filter, page, limit, search);
   if (!response.data) return <main>Cannot fetch data</main>;
   const { data: banIssues } = response;

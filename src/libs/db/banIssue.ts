@@ -7,7 +7,7 @@ import { UserType } from "./models/User";
 
 export const getBanIssuesDB = unstable_cache(
   async (filter: FilterQuery<BanIssueType>, page: number = 0, limit: number = 5, search: string = "") => {
-    console.log("MISS");
+    // console.log("MISS");
     await dbConnect();
     return (
       await BanIssue.aggregate<
@@ -45,7 +45,7 @@ export const getBanIssuesDB = unstable_cache(
 export async function getBanIssueDB(id: string) {
   return unstable_cache(
     async (id: string) => {
-      console.log("MISS");
+      // console.log("MISS");
       await dbConnect();
       return (
         await BanIssue.aggregate<
