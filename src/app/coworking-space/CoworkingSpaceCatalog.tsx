@@ -26,7 +26,7 @@ export default async function CoworkingSpaceCatalog({
   return (
     <div className="flex w-full flex-col items-center gap-2">
       <SearchFieldSP search={search} />
-      <ul className="grid w-full grid-cols-[repeat(auto-fit,minmax(13rem,1fr))] justify-items-center gap-4 p-4">
+      <ul className="grid w-full grid-cols-[repeat(auto-fit,minmax(15rem,1fr))] justify-items-center gap-4 p-4">
         {coworkingSpaces.map((coworkingSpace) => (
           <ProductCard key={coworkingSpace._id} coworkingSpace={coworkingSpace} />
         ))}
