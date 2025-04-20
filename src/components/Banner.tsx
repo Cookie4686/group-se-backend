@@ -2,13 +2,11 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 
 export default function Banner() {
   const covers = ["/img/cover.jpg", "/img/cover2.jpg", "/img/cover3.jpg"];
   const [index, setIndex] = useState(0);
   const router = useRouter();
-  const { data: session } = useSession();
 
   return (
     <div className="relative h-[calc(100vh-54px)] w-screen p-1" onClick={() => setIndex(index + 1)}>

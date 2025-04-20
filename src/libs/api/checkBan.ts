@@ -1,6 +1,5 @@
 "use server";
 
-import { resolve } from "path";
 import dbConnect from "../db/dbConnect";
 import BanIssue from "../db/models/BanIssue";
 import { resolveExpiredBan } from "../banIssue";
