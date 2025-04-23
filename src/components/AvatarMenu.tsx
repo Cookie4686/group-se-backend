@@ -75,7 +75,7 @@ export default function AvatarMenu({ session }: { session: Session | null }) {
       >
         {session ?
           [
-            <LinkItem href="/profile" handleClose={handleClose} key="profile">
+            <LinkItem href={`/user/${session.user.id}`} handleClose={handleClose} key="profile">
               <UserCircleIcon width={16} height={16} />
               Profile
             </LinkItem>,

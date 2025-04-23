@@ -1,11 +1,13 @@
 import { Button } from "@mui/material";
-import { getMe, userLogout } from "@/libs/auth";
+import { getUser, userLogout } from "@/libs/auth";
 import AvatarIcon from "@/components/AvatarIcon";
 import UserDetail from "./userDetail";
 
-export default async function Profile() {
-  const user = await getMe();
+export default async function Profile({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const user = await getUser(id);
   if (!user.data) return <main>Cannot fetch User</main>;
+
   return (
     <main className="p-4">
       <h1>Profile</h1>

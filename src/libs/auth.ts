@@ -3,7 +3,7 @@
 import { AuthError } from "next-auth";
 import { unstable_cache } from "next/cache";
 import { z } from "zod";
-import { auth, signIn, signOut } from "@/auth";
+import { signIn, signOut } from "@/auth";
 import dbConnect from "@/libs/db/dbConnect";
 import User, { type UserType as UserType } from "@/libs/db/models/User";
 import { isProtectedPage } from "@/utils";
@@ -71,25 +71,20 @@ export async function userLogout(pathname: string) {
   await signOut(isProtectedPage(pathname) ? { redirectTo: `/login?callbackUrl=${pathname}` } : undefined);
 }
 
-export async function getMe() {
-  const session = await auth();
-  if (session)
-    return unstable_cache(
-      async () => {
-        await dbConnect();
-        try {
-          const user = await User.findById(session.user.id);
-          if (user) return { success: true, data: user.toObject() };
-        } catch (error) {
-          console.error(error);
-        }
-        return { success: false };
-      },
-      [session.user.id],
-      { revalidate: 780 }
-    )();
-  return { success: false };
-}
+export const getUser = unstable_cache(
+  async (id: string) => {
+    await dbConnect();
+    try {
+      const user = await User.findById(id);
+      if (user) return { success: true, data: user.toObject() };
+    } catch (error) {
+      console.error(error);
+    }
+    return { success: false };
+  },
+  undefined,
+  { revalidate: 1200 }
+);
 
 export async function getUserList(filter: FilterQuery<UserType> = {}, options: QueryOptions<UserType> = {}) {
   await dbConnect();

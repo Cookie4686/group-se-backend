@@ -64,18 +64,11 @@ export function ReserveTableSkeleton() {
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
-              <TableCell align="left">
-                <div className="h-4 w-12 animate-pulse rounded bg-gray-300"></div>
-              </TableCell>
-              <TableCell align="left">
-                <div className="h-4 w-12 animate-pulse rounded bg-gray-300"></div>
-              </TableCell>
-              <TableCell align="left">
-                <div className="h-4 w-12 animate-pulse rounded bg-gray-300"></div>
-              </TableCell>
-              <TableCell align="left">
-                <div className="h-4 w-12 animate-pulse rounded bg-gray-300"></div>
-              </TableCell>
+              {[...Array(4)].map((e, i) => (
+                <TableCell align="left" key={i}>
+                  <div className="h-4 w-12 animate-pulse rounded bg-gray-300"></div>
+                </TableCell>
+              ))}
               <TableCell align="center"></TableCell>
             </TableRow>
           </TableHead>

@@ -9,6 +9,7 @@ import dbConnect from "./db/dbConnect";
 import { getReservationDB, getReservationsDB } from "./db/reservation";
 import { CWS } from "./db/models/CoworkingSpace";
 import Reservation, { ReservationType } from "./db/models/Reservation";
+import { validateRegex } from "@/utils";
 
 export async function getReservations(
   filter: mongoose.FilterQuery<ReservationType> = {},
@@ -19,16 +20,9 @@ export async function getReservations(
   const session = await auth();
   if (session) {
     try {
-      new RegExp(search);
-    } catch (error) {
-      if (error instanceof SyntaxError) {
-        search = "^$.";
-      }
-    }
-    try {
       const { data, total } = await getReservationsDB(
         filter,
-        { name: { $regex: search } },
+        { name: { $regex: validateRegex(search) } },
         session.user.role == "admin" ? undefined : session.user.id,
         page,
         limit

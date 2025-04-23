@@ -1,8 +1,7 @@
 import { CWS } from "./libs/db/models/CoworkingSpace";
 
 const protectedPages = [
-  "/profile",
-  "/banIssue",
+  "/banIssue.*",
   "/banAppeal",
   "/coworking-space/.*/edit",
   "/reservations.*",
@@ -17,13 +16,24 @@ export function concatAddress(coworkingSpace: CWS) {
   return `${coworkingSpace.address} ${coworkingSpace.district} ${coworkingSpace.subDistrict} ${coworkingSpace.province}, ${coworkingSpace.postalcode}`;
 }
 
-export function readSearchParams(params: { [key: string]: string | string[] | undefined }, key: string) {
+type SearchParams = { [key: string]: string | string[] | undefined };
+
+export function readSearchParams(params: SearchParams, key: string) {
   return params[key] instanceof Array ? params[key][0] : params[key];
 }
 
-export function readPaginationSearchParams(params: { [key: string]: string | string[] | undefined }) {
+export function readPaginationSearchParams(params: SearchParams) {
   return {
     page: (Number(readSearchParams(params, "page")) || 1) - 1,
     limit: Number(readSearchParams(params, "limit")) || undefined,
   };
+}
+
+export function validateRegex(value: string) {
+  try {
+    new RegExp(value);
+  } catch {
+    return "^$.";
+  }
+  return value;
 }

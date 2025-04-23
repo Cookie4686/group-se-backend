@@ -5,7 +5,6 @@ import clsx from "clsx";
 import { concatAddress } from "@/utils";
 import { UserGroupIcon, UserIcon, UsersIcon } from "@heroicons/react/24/outline";
 import AvatarIcon from "@/components/AvatarIcon";
-import DateCell from "./ReserveDateCell";
 import { CWS } from "@/libs/db/models/CoworkingSpace";
 import { ReservationType } from "@/libs/db/models/Reservation";
 import { UserType } from "@/libs/db/models/User";
@@ -76,7 +75,11 @@ export default function ReserveTableBody({
               </div>
             </TableCell>
             <TableCell align="left">
-              <DateCell startDate={startDate} endDate={endDate}></DateCell>
+              <div className="flex w-fit flex-col gap-1">
+                <span>{startDate.toLocaleString()}</span>
+                <span className="self-center">to</span>
+                <span>{endDate.toLocaleString()}</span>
+              </div>
             </TableCell>
             <TableCell align="left">
               <div className="grid w-fit grid-cols-[auto_auto] grid-rows-[auto_auto] items-center gap-2">
