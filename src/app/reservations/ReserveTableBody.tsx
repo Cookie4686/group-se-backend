@@ -4,7 +4,6 @@ import Image from "next/image";
 import clsx from "clsx";
 import { concatAddress } from "@/utils";
 import { UserGroupIcon, UserIcon, UsersIcon } from "@heroicons/react/24/outline";
-import AvatarIcon from "@/components/AvatarIcon";
 import { CWS } from "@/libs/db/models/CoworkingSpace";
 import { ReservationType } from "@/libs/db/models/Reservation";
 import { UserType } from "@/libs/db/models/User";
@@ -16,6 +15,7 @@ import OptionButton from "@/components/OptionButton";
 import Link from "next/link";
 import { useSnackpackContext } from "@/provider/SnackbarProvider";
 import { useActionState, useEffect } from "react";
+import UserInfo from "@/components/UserInfo";
 
 export default function ReserveTableBody({
   session,
@@ -102,13 +102,11 @@ export default function ReserveTableBody({
               </div>
             </TableCell>
             <TableCell align="left">
-              <div className="flex items-center gap-2">
-                <AvatarIcon
-                  props={{ sx: { width: 24, height: 24, fontSize: "0.875rem" } }}
-                  name={e.user.name}
-                />
-                <span>{e.user.name}</span>
-              </div>
+              <UserInfo
+                user={e.user}
+                name
+                avatarIconProps={{ sx: { width: 24, height: 24, fontSize: "0.875rem" } }}
+              />
             </TableCell>
             <TableCell align="center">
               <OptionButton>

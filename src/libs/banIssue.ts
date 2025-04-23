@@ -9,6 +9,7 @@ import { revalidateTag } from "next/cache";
 import { FilterQuery } from "mongoose";
 import mongoose from "mongoose";
 import { getBanIssuesDB, getBanIssueDB } from "./db/banIssue";
+import { validateRegex } from "@/utils";
 
 export async function getBanIssues(
   filter: FilterQuery<BanIssueType> = {},
@@ -21,14 +22,7 @@ export async function getBanIssues(
   if (session.user.role != "admin")
     filter.user = mongoose.Types.ObjectId.createFromHexString(session.user.id);
   try {
-    new RegExp(search);
-  } catch (error) {
-    if (error instanceof SyntaxError) {
-      search = "^$.";
-    }
-  }
-  try {
-    const result = await getBanIssuesDB(filter, page, limit, search);
+    const result = await getBanIssuesDB(filter, page, limit, validateRegex(search));
     const data = result?.data || [];
     const total = result?.total || 0;
     return { success: true, total, count: data.length, data };
@@ -97,9 +91,11 @@ export async function createBanIssue(formState: unknown, formData: FormData) {
   return { success: false, error: validatedFields.error.flatten(), data };
 }
 
-export async function resolveBanIssue(id: string) {
+export async function resolveBanIssue(formState: unknown, formData: FormData) {
   const session = await auth();
   if (!session || session.user.role != "admin") return { success: false, message: "unauthorized" };
+  const id = formData.get("id")?.toString();
+  if (!id) return { success: false, message: "Invalid input" };
   await dbConnect();
   try {
     const banIssue = await BanIssue.findByIdAndUpdate(

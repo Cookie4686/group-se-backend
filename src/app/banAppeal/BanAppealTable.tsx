@@ -1,11 +1,8 @@
-import clsx from "clsx";
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
-import AvatarIcon from "@/components/AvatarIcon";
 import TablePaginationSP from "@/components/TablePaginationSP";
-import DateCell from "./DateCell";
 import { getBanAppeals } from "@/libs/banAppeal";
-import OptionButton from "./OptionButton";
 import { Session } from "next-auth";
+import BanAppealTableBody from "./BanAppealTableBody";
 
 export default async function BanAppealTable({
   page,
@@ -35,50 +32,7 @@ export default async function BanAppealTable({
               <TableCell align="center"></TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
-            {banAppeal.map((e) => {
-              const createdAt = new Date(e.banIssue.createdAt);
-              const endDate = new Date(e.banIssue.endDate);
-              const appealDate = new Date(e.createdAt);
-
-              return (
-                <TableRow key={e._id} hover role="checkbox" tabIndex={-1}>
-                  <TableCell align="left">
-                    <div className="flex items-center gap-2">
-                      <AvatarIcon name={e.banIssue.user.name} />
-                      <div className="flex flex-col gap-1">
-                        <span className="font-bold">{e.banIssue.user.name}</span>
-                        <span>{e.banIssue.user.email}</span>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell align="left">{e.banIssue.title}</TableCell>
-                  <TableCell align="left">
-                    <DateCell createdAt={createdAt} endDate={endDate} />
-                  </TableCell>
-                  <TableCell align="left">
-                    <div className="flex flex-col gap-2">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={clsx(
-                            "inline-block aspect-square h-2 w-2 justify-self-center rounded-full",
-                            e.resolveStatus == "pending" && "bg-amber-300",
-                            e.resolveStatus == "denied" && "bg-red-500",
-                            e.resolveStatus == "resolved" && "bg-green-500"
-                          )}
-                        ></span>
-                        <span>{e.resolveStatus}</span>
-                      </div>
-                      <span>Appeal at: {appealDate.toLocaleString()}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell align="center">
-                    <OptionButton banAppeal={e} session={session} />
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
+          <BanAppealTableBody banAppeals={banAppeal} session={session} />
         </Table>
         <TablePaginationSP page={page} limit={limit} total={response.total} />
       </TableContainer>

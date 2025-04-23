@@ -38,17 +38,18 @@ export default async function BanAppeal({ params }: { params: Promise<{ id: stri
                 {session.user.role == "admin" && banAppeal.resolveStatus == "pending" && (
                   <OptionButton>
                     {[
-                      { text: "Approve", action: resolveBanAppeal.bind(undefined, appeal, "resolved") },
-                      { text: "Deny", action: resolveBanAppeal.bind(undefined, appeal, "denied") },
-                    ].map(({ text, action }) => (
+                      { text: "Approve", status: "resolved" },
+                      { text: "Deny", status: "denied" },
+                    ].map(({ text, status }) => (
                       <li key={text}>
                         <form
-                          action={async () => {
+                          action={async (e) => {
                             "use server";
-                            await action();
+                            await resolveBanAppeal(undefined, e);
                           }}
                         >
                           <input type="text" name="id" value={banAppeal._id} hidden readOnly />
+                          <input type="text" name="status" value={status} hidden readOnly />
                           <button
                             className="w-full cursor-pointer px-4 py-1.5 text-left hover:bg-gray-100"
                             type="submit"

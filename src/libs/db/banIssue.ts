@@ -16,7 +16,11 @@ export const getBanIssuesDB = unstable_cache(
     await dbConnect();
     return (
       await BanIssue.aggregate<
-        { data: (BanIssueType & { user: UserType; admin: UserType })[]; total: number } | undefined
+        | {
+            data: (Omit<Omit<BanIssueType, "user">, "admin"> & { user: UserType; admin: UserType })[];
+            total: number;
+          }
+        | undefined
       >([
         { $match: filter },
         {

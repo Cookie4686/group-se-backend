@@ -104,9 +104,13 @@ export async function createBanAppealComment(formState: unknown, formData: FormD
   return { success: false, error: validatedFields.error.flatten(), data };
 }
 
-export async function resolveBanAppeal(id: string, resolveStatus: "denied" | "resolved") {
+export async function resolveBanAppeal(formState: unknown, formData: FormData) {
   const session = await auth();
   if (!session || session.user.role != "admin") return { success: false, message: "unauthorized" };
+  const id = formData.get("id")?.toString();
+  const resolveStatus = formData.get("status")?.toString();
+  if (!id || !resolveStatus) return { success: false, message: "invalid input" };
+
   await dbConnect();
   try {
     const banAppeal = (await BanAppeal.findById(id))?.toObject();
@@ -122,18 +126,20 @@ export async function resolveBanAppeal(id: string, resolveStatus: "denied" | "re
           BanAppeal.findByIdAndUpdate(id, { resolveStatus, resolvedAt }, { new: true, runValidators: true })
         : null,
       ]);
-      revalidateTag("banAppeals");
-      revalidateTag(`banAppeals-${id}`);
-      if (resolveStatus == "resolved") {
-        revalidateTag(`banIssues`);
-        revalidateTag(`banIssues-${banAppeal.banIssue}`);
-        if (!updatedBanAppeal != !updatedBanIssue) {
-          console.error(
-            "FATAL: resolveBanAppeal() -> Ban issue and Ban appeal is not in sync with each other"
-          );
+      if (updatedBanAppeal) {
+        revalidateTag("banAppeals");
+        revalidateTag(`banAppeals-${id}`);
+        if (updatedBanAppeal.resolveStatus == "resolved") {
+          revalidateTag(`banIssues`);
+          revalidateTag(`banIssues-${banAppeal.banIssue}`);
+          if (!updatedBanAppeal != !updatedBanIssue) {
+            console.error(
+              "FATAL: resolveBanAppeal() -> Ban issue and Ban appeal is not in sync with each other"
+            );
+          }
         }
+        return { success: true, data: updatedBanAppeal.toObject() };
       }
-      return { success: true };
     }
   } catch (err) {
     console.error(err);

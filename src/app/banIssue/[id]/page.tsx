@@ -38,9 +38,9 @@ export default async function BanIssue({ params }: { params: Promise<{ id: strin
                   <OptionButton>
                     <li>
                       <form
-                        action={async () => {
+                        action={async (e) => {
                           "use server";
-                          await resolveBanIssue(id);
+                          await resolveBanIssue(undefined, e);
                         }}
                       >
                         <input type="text" name="id" value={banIssue._id} hidden readOnly />

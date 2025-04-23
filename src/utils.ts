@@ -19,7 +19,7 @@ export function concatAddress(coworkingSpace: CWS) {
 type SearchParams = { [key: string]: string | string[] | undefined };
 
 export function readSearchParams(params: SearchParams, key: string) {
-  return params[key] instanceof Array ? params[key][0] : params[key];
+  return (params[key] instanceof Array ? params[key][0] : params[key]) || "";
 }
 
 export function readPaginationSearchParams(params: SearchParams) {
