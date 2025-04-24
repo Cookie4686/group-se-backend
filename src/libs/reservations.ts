@@ -6,12 +6,12 @@ import mongoose from "mongoose";
 import { z } from "zod";
 import { auth } from "@/auth";
 import dbConnect from "./db/dbConnect";
-import { getReservationDB, getReservationsDB } from "./db/reservation";
+import { getReservationDB, getCoworkingReservationsDB, getUserReservationsDB } from "./db/reservation";
 import { CWS } from "./db/models/CoworkingSpace";
 import Reservation, { ReservationType } from "./db/models/Reservation";
 import { validateRegex } from "@/utils";
 
-export async function getReservations(
+export async function getUserReservations(
   filter: mongoose.FilterQuery<ReservationType> = {},
   page: number = 0,
   limit: number = 5,
@@ -20,10 +20,35 @@ export async function getReservations(
   const session = await auth();
   if (session) {
     try {
-      const { data, total } = await getReservationsDB(
+      const { data, total } = await getUserReservationsDB(
         filter,
         { name: { $regex: validateRegex(search) } },
-        session.user.role == "admin" ? undefined : session.user.id,
+        session.user.id,
+        page,
+        limit
+      );
+      return { success: true, total: total, count: data.length, data };
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  return { success: false };
+}
+
+export async function getCoworkingReservations(
+  filter: mongoose.FilterQuery<ReservationType> = {},
+  page: number = 0,
+  limit: number = 5,
+  search: string = "",
+  coworkingSpaceID: string
+) {
+  const session = await auth();
+  if (session) {
+    try {
+      const { data, total } = await getCoworkingReservationsDB(
+        filter,
+        { name: { $regex: validateRegex(search) } },
+        coworkingSpaceID,
         page,
         limit
       );

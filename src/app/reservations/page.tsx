@@ -1,14 +1,14 @@
 import { Suspense } from "react";
 import SearchFieldSP from "@/components/SearchFieldSP";
-import { readPaginationSearchParams, readSearchParams } from "@/utils";
+import { readPaginationSearchParams, readSearchParams, SearchParams } from "@/utils";
 import FilterDialog from "./FilterDialog";
-import TableBody, { ReserveTableSkeleton } from "./ReserveTable";
+import ReserveTable, { ReserveTableSkeleton } from "./ReserveTable";
+import { auth } from "@/auth";
 
-export default async function Reservations({
-  searchParams,
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}) {
+export default async function Reservations({ searchParams }: { searchParams: Promise<SearchParams> }) {
+  const session = await auth();
+  if (!session) return <main>Login to view reservations</main>;
+
   const params = await searchParams;
   const { page, limit = 5 } = readPaginationSearchParams(params);
   const search = readSearchParams(params, "search") || "";
@@ -17,14 +17,14 @@ export default async function Reservations({
 
   return (
     <main className="p-4">
-      <h1>Reservations</h1>
+      <h1>My Reservations</h1>
       <div className="mx-auto max-w-5xl rounded-3xl border p-8">
         <div className="flex items-center justify-center gap-4 pb-2">
           <SearchFieldSP search={search} />
           <FilterDialog />
         </div>
         <Suspense fallback={<ReserveTableSkeleton />}>
-          <TableBody page={page} limit={limit} search={search} min={min} max={max} />
+          <ReserveTable {...{ page, limit, search, min, max, session }} />
         </Suspense>
       </div>
     </main>

@@ -2,11 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { auth } from "@/auth";
-import { deleteCoworkingSpace, getCoworkingSpace } from "@/libs/coworkingSpace";
+import { getCoworkingSpace } from "@/libs/coworkingSpace";
 import ReserveForm from "./ReserveForm";
 import DetailBody from "./DetailBody";
 import { checkBanAPI } from "@/libs/api/checkBan";
-import { Button } from "@mui/material";
+import CoworkingSpaceOptionButton from "@/components/coworkingSpace/OptionButton";
 
 export default async function CoworkingSpaceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -15,6 +15,7 @@ export default async function CoworkingSpaceDetailPage({ params }: { params: Pro
   const { data: coworkingSpace } = response;
 
   const session = await auth();
+  const permission = session && (session.user.role == "admin" || session.user.id == coworkingSpace.owner);
 
   return (
     <main className="p-4">
@@ -29,28 +30,14 @@ export default async function CoworkingSpaceDetailPage({ params }: { params: Pro
             sizes="50vw"
             priority
           />
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="!text-left font-bold">{coworkingSpace.name}</h1>
-              {session && (session.user.role == "admin" || session.user.id == coworkingSpace.owner) && (
-                <>
-                  <Link href={`/coworking-space/${coworkingSpace._id}/edit`}>
-                    <Button color="primary" variant="text" size="small">
-                      Edit
-                    </Button>
-                  </Link>
-                  <form
-                    action={async () => {
-                      "use server";
-                      await deleteCoworkingSpace(coworkingSpace._id);
-                    }}
-                  >
-                    <Button type="submit" color="primary" variant="text" size="small">
-                      Delete
-                    </Button>
-                  </form>
-                </>
-              )}
+          <div className="w-[50%]">
+            <div className="flex w-full items-center gap-2">
+              <div className="flex w-full items-center justify-between">
+                <h1 className="!text-left font-bold">{coworkingSpace.name}</h1>
+                {permission && (
+                  <CoworkingSpaceOptionButton id={coworkingSpace._id} edit viewReserve deleteOption />
+                )}
+              </div>
             </div>
             <span className="mb-8 inline-block">{coworkingSpace.description}</span>
             <DetailBody coworkingSpace={coworkingSpace} />

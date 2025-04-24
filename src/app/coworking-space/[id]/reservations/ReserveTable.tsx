@@ -7,31 +7,37 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import TablePaginationSP from "@/components/TablePaginationSP";
-import { getUserReservations } from "@/libs/reservations";
+import { getCoworkingReservations } from "@/libs/reservations";
 import ReserveTableBody from "./ReserveTableBody";
+import { CWS } from "@/libs/db/models/CoworkingSpace";
 
 export default async function ReserveTable({
+  id,
   page,
   limit,
   search,
   min,
   max,
+  coworkingSpace,
   session,
 }: {
+  id: string;
   page: number;
   limit: number;
   search: string;
   min?: number;
   max?: number;
+  coworkingSpace: CWS;
   session: Session;
 }) {
   // For loading test
   // await new Promise((resolve) => setTimeout(resolve, 3000));
-  const response = await getUserReservations(
+  const response = await getCoworkingReservations(
     min && max ? { personCount: { $gte: min, $lte: max } } : {},
     page,
     limit,
-    search
+    search,
+    id
   );
   if (!response.data) return <main>Cannot fetch data</main>;
 
@@ -44,10 +50,11 @@ export default async function ReserveTable({
               <TableCell align="left">Name</TableCell>
               <TableCell align="left">Date</TableCell>
               <TableCell align="left">Status</TableCell>
+              <TableCell align="left">User</TableCell>
               <TableCell align="center"></TableCell>
             </TableRow>
           </TableHead>
-          <ReserveTableBody session={session} reservations={response.data} />
+          <ReserveTableBody session={session} reservations={response.data} coworkingSpace={coworkingSpace} />
         </Table>
         <TablePaginationSP page={page} limit={limit} total={response.total} />
       </TableContainer>
@@ -62,7 +69,7 @@ export function ReserveTableSkeleton() {
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
-              {[...Array(3)].map((e, i) => (
+              {[...Array(4)].map((e, i) => (
                 <TableCell align="left" key={i}>
                   <div className="h-4 w-12 animate-pulse rounded bg-gray-300"></div>
                 </TableCell>
@@ -92,6 +99,12 @@ export function ReserveTableSkeleton() {
                 <div className="flex flex-col gap-4">
                   <div className="h-4 w-24 animate-pulse rounded bg-gray-300"></div>
                   <div className="h-4 w-24 animate-pulse rounded bg-gray-300"></div>
+                </div>
+              </TableCell>
+              <TableCell align="left">
+                <div className="flex items-center gap-2">
+                  <div className="h-6 w-6 animate-pulse rounded-full bg-gray-300"></div>
+                  <div className="h-4 w-8 animate-pulse rounded bg-gray-300"></div>
                 </div>
               </TableCell>
               <TableCell align="center">

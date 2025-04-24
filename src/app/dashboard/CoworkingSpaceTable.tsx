@@ -8,14 +8,12 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-import { deleteCoworkingSpace, getCoworkingSpaces } from "@/libs/coworkingSpace";
+import { getCoworkingSpaces } from "@/libs/coworkingSpace";
 import { concatAddress } from "@/utils";
 import SearchFieldSP from "@/components/SearchFieldSP";
 import TablePaginationSP from "@/components/TablePaginationSP";
-import OptionButton from "@/components/OptionButton";
 import { Session } from "next-auth";
-import { FilterQuery } from "mongoose";
-import { CWS } from "@/libs/db/models/CoworkingSpace";
+import CoworkingSpaceOptionButton from "@/components/coworkingSpace/OptionButton";
 
 export default async function CWSTable({
   page,
@@ -28,11 +26,11 @@ export default async function CWSTable({
   search: string;
   session: Session;
 }) {
-  const filter: FilterQuery<CWS> = { name: { $regex: search } };
-  if (session.user.role != "admin") {
-    filter.owner = session.user.id;
-  }
-  const response = await getCoworkingSpaces(filter, page, limit);
+  const response = await getCoworkingSpaces(
+    { name: { $regex: search }, ...(session.user.role != "admin" ? { owner: session.user.id } : {}) },
+    page,
+    limit
+  );
   if (!response.data) return <main>Cannot fetch data</main>;
   const { data: coworkingSpaces } = response;
   return (
@@ -75,35 +73,7 @@ export default async function CWSTable({
                   </TableCell>
                   <TableCell align="left">Status</TableCell>
                   <TableCell align="center">
-                    <OptionButton>
-                      <>
-                        {[
-                          { text: "View Info", href: `/coworking-space/${e._id}` },
-                          { text: "Edit", href: `/coworking-space/${e._id}/edit` },
-                        ].map(({ text, href }) => (
-                          <li key={text}>
-                            <Link className="inline-block w-full px-4 py-1.5 hover:bg-gray-100" href={href}>
-                              {text}
-                            </Link>
-                          </li>
-                        ))}
-                        <li>
-                          <form
-                            action={async () => {
-                              "use server";
-                              await deleteCoworkingSpace(e._id);
-                            }}
-                          >
-                            <button
-                              className="w-full cursor-pointer px-4 py-1.5 text-left hover:bg-gray-100"
-                              type="submit"
-                            >
-                              Delete
-                            </button>
-                          </form>
-                        </li>
-                      </>
-                    </OptionButton>
+                    <CoworkingSpaceOptionButton id={e._id} viewInfo viewReserve edit deleteOption />
                   </TableCell>
                 </TableRow>
               ))}

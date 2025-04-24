@@ -7,17 +7,21 @@ import { UserGroupIcon, UserIcon, UsersIcon } from "@heroicons/react/24/outline"
 import { TableBody, TableRow, TableCell } from "@mui/material";
 import { Session } from "next-auth";
 import Alert from "@mui/material/Alert";
-import { deleteReservation, getUserReservations, updateReservationStatus } from "@/libs/reservations";
+import { deleteReservation, getCoworkingReservations, updateReservationStatus } from "@/libs/reservations";
 import { useSnackpackContext } from "@/provider/SnackbarProvider";
 import { useActionState, useEffect } from "react";
+import UserInfo from "@/components/UserInfo";
+import { CWS } from "@/libs/db/models/CoworkingSpace";
 import ReservationOptionButton from "@/components/reservations/OptionButton";
 
 export default function ReserveTableBody({
   session,
+  coworkingSpace,
   reservations,
 }: {
   session: Session;
-  reservations: Exclude<Awaited<ReturnType<typeof getUserReservations>>["data"], undefined>;
+  coworkingSpace: CWS;
+  reservations: Exclude<Awaited<ReturnType<typeof getCoworkingReservations>>["data"], undefined>;
 }) {
   const [editState, editAction, editPending] = useActionState(updateReservationStatus, undefined);
   const [deleteState, deleteAction, deletePending] = useActionState(deleteReservation, undefined);
@@ -49,22 +53,23 @@ export default function ReserveTableBody({
       {reservations.map((e) => {
         const startDate = new Date(e.startDate);
         const endDate = new Date(e.endDate);
-        const adminPermission = session.user.role == "admin" || session.user.id == e.coworkingSpace.owner;
+        const adminPermission = session.user.role == "admin" || session.user.id == coworkingSpace.owner;
+
         return (
           <TableRow key={e._id} hover role="checkbox" tabIndex={-1}>
             <TableCell align="left">
               <div className="flex items-center gap-4">
                 <Image
                   className="aspect-square h-12 rounded object-cover"
-                  src={e.coworkingSpace.picture || "/img/BOT-learning-center.jpg"}
+                  src={coworkingSpace.picture || "/img/BOT-learning-center.jpg"}
                   alt="coworking image"
                   width={48}
                   height={48}
                   sizes="96px"
                 />
                 <div className="flex flex-col gap-2">
-                  <span className="font-bold">{e.coworkingSpace.name}</span>
-                  <span>{concatAddress(e.coworkingSpace)}</span>
+                  <span className="font-bold">{coworkingSpace.name}</span>
+                  <span>{concatAddress(coworkingSpace)}</span>
                 </div>
               </div>
             </TableCell>
@@ -94,6 +99,13 @@ export default function ReserveTableBody({
                 ></span>
                 <span>{e.approvalStatus.charAt(0).toUpperCase() + e.approvalStatus.slice(1)}</span>
               </div>
+            </TableCell>
+            <TableCell align="left">
+              <UserInfo
+                user={e.user}
+                name
+                avatarIconProps={{ sx: { width: 24, height: 24, fontSize: "0.875rem" } }}
+              />
             </TableCell>
             <TableCell align="center">
               <ReservationOptionButton
