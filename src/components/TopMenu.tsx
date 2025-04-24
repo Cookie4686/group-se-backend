@@ -6,15 +6,9 @@ import AvatarMenu from "./AvatarMenu";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import { Session } from "next-auth";
-import { useEffect, useState } from "react";
 
 export default function TopMenu({ session }: { session: Session | null }) {
   const pathname = usePathname();
-  const [path, setPath] = useState(pathname);
-
-  useEffect(() => {
-    setPath(pathname);
-  }, [pathname]);
 
   return (
     <nav className="fixed top-0 left-0 z-30 flex h-12 w-full justify-between bg-white shadow-sm">
@@ -34,12 +28,17 @@ export default function TopMenu({ session }: { session: Session | null }) {
           { text: "Reservations", href: "/reservations" },
         ].map(({ text, href }) => (
           <Link
-            className={clsx("link", href === path && "active")}
+            className={"group relative rounded px-2 py-1 transition hover:bg-gray-100"}
             href={href}
             key={text}
-            onClick={() => setPath(href)}
           >
             {text}
+            <div
+              className={clsx(
+                "absolute bottom-0 h-[1px] bg-black transition-all duration-500",
+                href === pathname ? "left-0 w-full" : "left-1/2 w-0"
+              )}
+            ></div>
           </Link>
         ))}
       </div>

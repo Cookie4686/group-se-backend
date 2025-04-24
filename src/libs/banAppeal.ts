@@ -116,20 +116,20 @@ export async function resolveBanAppeal(formState: unknown, formData: FormData) {
     const banAppeal = (await BanAppeal.findById(id))?.toObject();
     if (banAppeal && banAppeal.resolveStatus == "pending") {
       const resolvedAt = new Date();
-      const [updatedBanIssue, updatedBanAppeal] = await Promise.all([
-        BanIssue.findByIdAndUpdate(
-          banAppeal.banIssue,
-          { isResolved: resolveStatus == "resolved", resolvedAt },
-          { new: true, runValidators: true }
-        ),
+      const [updatedBanAppeal, updatedBanIssue] = await Promise.all([
+        BanAppeal.findByIdAndUpdate(id, { resolveStatus, resolvedAt }, { new: true, runValidators: true }),
         resolveStatus == "resolved" ?
-          BanAppeal.findByIdAndUpdate(id, { resolveStatus, resolvedAt }, { new: true, runValidators: true })
+          BanIssue.findByIdAndUpdate(
+            banAppeal.banIssue,
+            { isResolved: true, resolvedAt },
+            { new: true, runValidators: true }
+          )
         : null,
       ]);
       if (updatedBanAppeal) {
         revalidateTag("banAppeals");
         revalidateTag(`banAppeals-${id}`);
-        if (updatedBanAppeal.resolveStatus == "resolved") {
+        if (resolveStatus == "resolved") {
           revalidateTag(`banIssues`);
           revalidateTag(`banIssues-${banAppeal.banIssue}`);
           if (!updatedBanAppeal != !updatedBanIssue) {
