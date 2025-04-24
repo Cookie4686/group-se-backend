@@ -107,3 +107,24 @@ h1 {
     color-scheme: light;
   }
 }
+
+.link {
+  position: relative;
+}
+
+.link::after {
+  content: "";
+  position: absolute;
+  left: 50;
+  bottom: 0;
+  width: 0;
+  height: 1px;
+  background-color: black;
+  transition: all 1s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.link.active::after,
+.link:hover::after {
+  left: 0;
+  width: 100%;
+}

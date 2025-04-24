@@ -12,7 +12,9 @@ export default function middleware(req: NextRequest) {
 
 const authMiddleware = auth(async (req) => {
   if (!req.auth) {
-    return NextResponse.redirect(new URL(`/login?callbackUrl=${req.nextUrl.href}`, req.nextUrl));
+    return NextResponse.redirect(
+      new URL(`/login?callbackUrl=${req.nextUrl.href}&redirected=true`, req.nextUrl)
+    );
   }
   if (!req.nextUrl.pathname.startsWith("/banIssue")) {
     const response = (await fetch(`${req.nextUrl.origin}/api/checkBan`, {

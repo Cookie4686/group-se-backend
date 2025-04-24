@@ -1,10 +1,20 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import { auth } from "@/auth";
 import AvatarMenu from "./AvatarMenu";
+import { usePathname } from "next/navigation";
+import clsx from "clsx";
+import { Session } from "next-auth";
+import { useEffect, useState } from "react";
 
-export default async function TopMenu() {
-  const session = await auth();
+export default function TopMenu({ session }: { session: Session | null }) {
+  const pathname = usePathname();
+  const [path, setPath] = useState(pathname);
+
+  useEffect(() => {
+    setPath(pathname);
+  }, [pathname]);
 
   return (
     <nav className="fixed top-0 left-0 z-30 flex h-12 w-full justify-between bg-white shadow-sm">
@@ -19,8 +29,19 @@ export default async function TopMenu() {
             sizes="100vh"
           />
         </Link>
-        <Link href="/coworking-space" className="hover:text-gray-600">Co-working Space</Link>
-        <Link href="/reservations" className="hover:text-gray-600">Reservations</Link>
+        {[
+          { text: "Co-workingSpace", href: "/coworking-space" },
+          { text: "Reservations", href: "/reservations" },
+        ].map(({ text, href }) => (
+          <Link
+            className={clsx("link", href === path && "active")}
+            href={href}
+            key={text}
+            onClick={() => setPath(href)}
+          >
+            {text}
+          </Link>
+        ))}
       </div>
       <div className="flex items-center gap-4 pr-4">
         <AvatarMenu session={session} />

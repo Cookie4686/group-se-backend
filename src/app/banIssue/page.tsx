@@ -18,9 +18,9 @@ export default async function BanIssues({
   const params = await searchParams;
 
   const { page, limit = 5 } = readPaginationSearchParams(params);
-  const search = readSearchParams(params, "search");
-  const time = readSearchParams(params, "time");
-  const resolve = readSearchParams(params, "resolve");
+  const search = readSearchParams(params, "search") || "";
+  const time = readSearchParams(params, "time") || "";
+  const resolve = readSearchParams(params, "resolve") || "";
 
   return (
     <main className="p-4">

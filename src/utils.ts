@@ -16,10 +16,10 @@ export function concatAddress(coworkingSpace: CWS) {
   return `${coworkingSpace.address} ${coworkingSpace.district} ${coworkingSpace.subDistrict} ${coworkingSpace.province}, ${coworkingSpace.postalcode}`;
 }
 
-type SearchParams = { [key: string]: string | string[] | undefined };
+export type SearchParams = { [key: string]: string | string[] | undefined };
 
 export function readSearchParams(params: SearchParams, key: string) {
-  return (params[key] instanceof Array ? params[key][0] : params[key]) || "";
+  return params[key] instanceof Array ? params[key][0] : params[key];
 }
 
 export function readPaginationSearchParams(params: SearchParams) {
