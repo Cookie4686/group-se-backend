@@ -14,10 +14,15 @@ export default async function CoworkingSpaceCatalog({
   page: number;
   limit: number;
 }) {
-  const response = await getCoworkingSpaces({ name: { $regex: validateRegex(search) } }, page, limit);
+  const response = await getCoworkingSpaces(
+    { name: { $regex: validateRegex(search) } },
+    page,
+    limit,
+    undefined
+  );
   if (!response.data) return <span>Cannot fetch data</span>;
-
   const { data: coworkingSpaces } = response;
+
   return (
     <>
       <ul className="grid w-full grid-cols-[repeat(auto-fit,minmax(15rem,1fr))] justify-items-center gap-4 p-4">

@@ -2,8 +2,6 @@ import { Session } from "next-auth";
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import { getBanIssues, resolveExpiredBan } from "@/libs/banIssue";
 import TablePaginationSP from "@/components/TablePaginationSP";
-import { FilterQuery } from "mongoose";
-import { BanIssueType } from "@/libs/db/models/BanIssue";
 import BanIssueTableBody from "./BanIssueTableBody";
 
 export default async function BanIssueTable({
@@ -21,20 +19,20 @@ export default async function BanIssueTable({
   resolve: string;
   session: Session;
 }) {
-  // * Refactor this
-  const filter: FilterQuery<BanIssueType> = {};
-  if (time == "current") {
-    filter.endDate = { $gte: new Date() };
-  } else if (time == "past") {
-    filter.endDate = { $lte: new Date() };
-  }
-  if (resolve == "yes") {
-    filter.isResolved = true;
-  } else if (resolve == "no") {
-    filter.isResolved = false;
-  }
   await resolveExpiredBan();
-  const response = await getBanIssues(filter, page, limit, search);
+  const response = await getBanIssues(
+    {
+      ...(time == "current" ? { $gte: new Date() }
+      : time == "past" ? { $lte: new Date() }
+      : {}),
+      ...(resolve == "yes" ? { isResolved: true }
+      : resolve == "no" ? { isResolved: false }
+      : {}),
+    },
+    page,
+    limit,
+    search
+  );
   if (!response.data) return <main>Cannot fetch data</main>;
   const { data: banIssues } = response;
 

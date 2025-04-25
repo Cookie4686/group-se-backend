@@ -1,21 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { auth } from "@/auth";
 import { getCoworkingSpace } from "@/libs/coworkingSpace";
 import ReserveForm from "./ReserveForm";
 import DetailBody from "./DetailBody";
 import { checkBanAPI } from "@/libs/api/checkBan";
 import CoworkingSpaceOptionButton from "@/components/coworkingSpace/OptionButton";
+import { auth } from "@/auth";
 
 export default async function CoworkingSpaceDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const response = await getCoworkingSpace(id);
+  const [{ id }, session] = await Promise.all([params, auth()]);
+  const response = await getCoworkingSpace(id, session);
   if (!response.data) return <main>Cannot fetch data</main>;
   const { data: coworkingSpace } = response;
-
-  const session = await auth();
-  const permission = session && (session.user.role == "admin" || session.user.id == coworkingSpace.owner);
 
   return (
     <main className="p-4">
@@ -34,7 +31,7 @@ export default async function CoworkingSpaceDetailPage({ params }: { params: Pro
             <div className="flex w-full items-center gap-2">
               <div className="flex w-full items-center justify-between">
                 <h1 className="!text-left font-bold">{coworkingSpace.name}</h1>
-                {permission && (
+                {coworkingSpace.privilage == "admin" && (
                   <CoworkingSpaceOptionButton id={coworkingSpace._id} edit viewReserve deleteOption />
                 )}
               </div>

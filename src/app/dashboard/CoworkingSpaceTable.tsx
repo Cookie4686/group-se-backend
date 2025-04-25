@@ -26,11 +26,7 @@ export default async function CWSTable({
   search: string;
   session: Session;
 }) {
-  const response = await getCoworkingSpaces(
-    { name: { $regex: search }, ...(session.user.role != "admin" ? { owner: session.user.id } : {}) },
-    page,
-    limit
-  );
+  const response = await getCoworkingSpaces({ name: { $regex: search } }, page, limit, session, "admin");
   if (!response.data) return <main>Cannot fetch data</main>;
   const { data: coworkingSpaces } = response;
   return (

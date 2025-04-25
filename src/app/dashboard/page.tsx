@@ -7,12 +7,12 @@ export default async function Dashboard({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const session = await auth();
+  const [params, session] = await Promise.all([searchParams, auth()]);
   if (!session) return <main>You are not logged in</main>;
 
-  const params = await searchParams;
   const { page, limit = 15 } = readPaginationSearchParams(params);
   const search = readSearchParams(params, "search") || "";
+
   return (
     <main className="p-4">
       <h1>Coworking-Spaces</h1>
