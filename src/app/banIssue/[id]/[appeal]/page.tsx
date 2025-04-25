@@ -1,11 +1,12 @@
 import Link from "next/link";
-import clsx from "clsx";
 import { auth } from "@/auth";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { getBanAppeal, resolveBanAppeal } from "@/libs/banAppeal";
 import AvatarIcon from "@/components/AvatarIcon";
-import OptionButton from "@/components/OptionButton";
 import CommentForm from "./CommentForm";
+import { BanIssueStatus } from "@/components/banIssue/TableBodyCell";
+import { AppealStatus } from "@/components/banAppeal/TableBodyCell";
+import BanAppealOptionButton from "@/components/banAppeal/OptionButton";
 
 export default async function BanAppeal({ params }: { params: Promise<{ id: string; appeal: string }> }) {
   const session = await auth();
@@ -28,38 +29,20 @@ export default async function BanAppeal({ params }: { params: Promise<{ id: stri
             <div className="flex items-center justify-between">
               <h1 className="!text-left">{banIssue.title}</h1>
               <div className="flex items-center gap-2">
-                <span
-                  className={clsx(
-                    "inline-block aspect-square h-2 w-2 justify-self-center rounded-full",
-                    banIssue.isResolved ? "bg-green-500" : "bg-red-500"
-                  )}
-                ></span>
-                <span>{banIssue.isResolved ? "Resolved" : "Not Resolved"}</span>
+                <BanIssueStatus isResolved={banIssue.isResolved} />
                 {session.user.role == "admin" && banAppeal.resolveStatus == "pending" && (
-                  <OptionButton>
-                    {[
-                      { text: "Approve", status: "resolved" },
-                      { text: "Deny", status: "denied" },
-                    ].map(({ text, status }) => (
-                      <li key={text}>
-                        <form
-                          action={async (e) => {
-                            "use server";
-                            await resolveBanAppeal(undefined, e);
-                          }}
-                        >
-                          <input type="text" name="id" value={banAppeal._id} hidden readOnly />
-                          <input type="text" name="status" value={status} hidden readOnly />
-                          <button
-                            className="w-full cursor-pointer px-4 py-1.5 text-left hover:bg-gray-100"
-                            type="submit"
-                          >
-                            {text}
-                          </button>
-                        </form>
-                      </li>
-                    ))}
-                  </OptionButton>
+                  <BanAppealOptionButton
+                    banIssueID={banIssue._id}
+                    banAppealID={banAppeal._id}
+                    edit={{
+                      approve: true,
+                      deny: true,
+                      action: async (e) => {
+                        "use server";
+                        await resolveBanAppeal(undefined, e);
+                      },
+                    }}
+                  />
                 )}
               </div>
             </div>
@@ -72,17 +55,7 @@ export default async function BanAppeal({ params }: { params: Promise<{ id: stri
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-8">
               <h2 className="text-xl font-bold">Ban Appeal</h2>
-              <div className="flex items-center gap-2">
-                <span
-                  className={clsx(
-                    "inline-block aspect-square h-2 w-2 justify-self-center rounded-full",
-                    banAppeal.resolveStatus == "pending" && "bg-amber-300",
-                    banAppeal.resolveStatus == "denied" && "bg-red-500",
-                    banAppeal.resolveStatus == "resolved" && "bg-green-500"
-                  )}
-                ></span>
-                <span>{banAppeal.resolveStatus}</span>
-              </div>
+              <AppealStatus resolveStatus={banAppeal.resolveStatus} />
             </div>
             <span>Appeal description: {banAppeal.description}</span>
           </div>

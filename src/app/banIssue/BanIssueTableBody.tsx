@@ -3,14 +3,13 @@
 import { BanIssueType } from "@/libs/db/models/BanIssue";
 import { UserType } from "@/libs/db/models/User";
 import { TableBody, TableRow, TableCell, Alert } from "@mui/material";
-import clsx from "clsx";
-import OptionButton from "@/components/OptionButton";
 import { resolveBanIssue } from "@/libs/banIssue";
 import { useActionState, useEffect } from "react";
-import Link from "next/link";
 import { Session } from "next-auth";
 import { useSnackpackContext } from "@/provider/SnackbarProvider";
 import UserInfo from "@/components/UserInfo";
+import { BanIssueStatus } from "@/components/banIssue/TableBodyCell";
+import BanIssueOptionButton from "@/components/banIssue/OptionButton";
 
 export default function BanIssueTableBody({
   banIssues,
@@ -58,45 +57,19 @@ export default function BanIssueTableBody({
               </div>
             </TableCell>
             <TableCell align="left">
-              <div className="flex items-center gap-2">
-                <span
-                  className={clsx(
-                    "inline-block aspect-square h-2 w-2 justify-self-center rounded-full",
-                    e.isResolved ? "bg-green-500" : "bg-red-500"
-                  )}
-                ></span>
-                <span>{e.isResolved ? "Resolved" : "Not Resolved"}</span>
-              </div>
+              <BanIssueStatus isResolved={e.isResolved} />
             </TableCell>
             <TableCell align="center">
-              <OptionButton>
-                {[
-                  { text: "View Info", href: `/banIssue/${e._id}` },
-                  ...(session.user.id == e.user._id ?
-                    [{ text: "Make an appeal", href: `/banIssue/${e._id}/appeal` }]
-                  : []),
-                ].map(({ text, href }) => (
-                  <li key={text}>
-                    <Link className="inline-block w-full px-4 py-1.5 hover:bg-gray-100" href={href}>
-                      {text}
-                    </Link>
-                  </li>
-                ))}
-                {session.user.role == "admin" && !e.isResolved && (
-                  <li>
-                    <form action={editAction}>
-                      <input type="text" name="id" value={e._id} hidden readOnly />
-                      <button
-                        className="w-full cursor-pointer px-4 py-1.5 text-left hover:bg-gray-100"
-                        type="submit"
-                        disabled={editPending}
-                      >
-                        Resolve Ban
-                      </button>
-                    </form>
-                  </li>
-                )}
-              </OptionButton>
+              <BanIssueOptionButton
+                id={e._id}
+                viewInfo
+                appeal={session.user.id == e.user._id}
+                resolve={
+                  session.user.role == "admin" && !e.isResolved ?
+                    { action: editAction, pending: editPending }
+                  : undefined
+                }
+              />
             </TableCell>
           </TableRow>
         );

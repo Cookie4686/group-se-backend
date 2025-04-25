@@ -3,9 +3,10 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { getBanIssue, resolveBanIssue } from "@/libs/banIssue";
 import AvatarIcon from "@/components/AvatarIcon";
 import clsx from "clsx";
-import OptionButton from "@/components/OptionButton";
 import { auth } from "@/auth";
 import { Button } from "@mui/material";
+import { BanIssueStatus } from "@/components/banIssue/TableBodyCell";
+import BanIssueOptionButton from "@/components/banIssue/OptionButton";
 
 export default async function BanIssue({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
@@ -27,52 +28,34 @@ export default async function BanIssue({ params }: { params: Promise<{ id: strin
             <div className="flex items-center justify-between">
               <h1 className="!text-left">{banIssue.title}</h1>
               <div className="flex items-center gap-2">
-                <span
-                  className={clsx(
-                    "inline-block aspect-square h-2 w-2 justify-self-center rounded-full",
-                    banIssue.isResolved ? "bg-green-500" : "bg-red-500"
-                  )}
-                ></span>
-                <span>{banIssue.isResolved ? "Resolved" : "Not Resolved"}</span>
+                <BanIssueStatus isResolved={banIssue.isResolved} />
                 {session.user.role == "admin" && !banIssue.isResolved && (
-                  <OptionButton>
-                    <li>
-                      <form
-                        action={async (e) => {
-                          "use server";
-                          await resolveBanIssue(undefined, e);
-                        }}
-                      >
-                        <input type="text" name="id" value={banIssue._id} hidden readOnly />
-                        <button
-                          className="w-full cursor-pointer px-4 py-1.5 text-left hover:bg-gray-100"
-                          type="submit"
-                        >
-                          Resolve Ban
-                        </button>
-                      </form>
-                    </li>
-                  </OptionButton>
+                  <BanIssueOptionButton
+                    id={banIssue._id}
+                    resolve={{
+                      action: async (e) => {
+                        "use server";
+                        await resolveBanIssue(undefined, e);
+                      },
+                    }}
+                  />
                 )}
               </div>
             </div>
             <div className="flex items-center gap-8">
-              <div className="flex items-center gap-2 rounded border px-4 py-2">
-                <span>Issuer: </span>
-                <AvatarIcon
-                  name={banIssue.admin.name}
-                  props={{ sx: { width: "1.25rem", height: "1.25rem", fontSize: "0.75rem" } }}
-                />
-                <span>{banIssue.admin.name}</span>
-              </div>
-              <div className="flex items-center gap-2 rounded border px-4 py-2">
-                <span>Target: </span>
-                <AvatarIcon
-                  name={banIssue.user.name}
-                  props={{ sx: { width: "1.25rem", height: "1.25rem", fontSize: "0.75rem" } }}
-                />
-                <span>{banIssue.user.name}</span>
-              </div>
+              {[
+                { text: "Issuer: ", name: banIssue.admin.name },
+                { text: "Target: ", name: banIssue.user.name },
+              ].map(({ text, name }) => (
+                <div className="flex items-center gap-2 rounded border px-4 py-2" key={text}>
+                  <span>{text}</span>
+                  <AvatarIcon
+                    name={name}
+                    props={{ sx: { width: "1.25rem", height: "1.25rem", fontSize: "0.75rem" } }}
+                  />
+                  <span>{name}</span>
+                </div>
+              ))}
             </div>
             <div className="flex w-fit gap-4">
               <span>Issue At: {createdAt.toLocaleString()}</span>

@@ -22,8 +22,9 @@
 //  /CoworkingSpace
 //? /CoworkingSpace/[id]
 //  /CoworkingSpace/[id]/edit
+//* /CoworkingSpace/[id]/reservations
 
-//? /Reservations
+//* /Reservations
 //? /Reservations/[id]
 
 //? /Dashboard
