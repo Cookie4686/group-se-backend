@@ -3,9 +3,6 @@
 //? /CoworkingSpace/[id] - Make Reserve form a popup button
 //? /Reservations/[id] - Add more info
 
-//* /Reservations - Cleanup code
-//* /CoworkingSpace/[id]/reservations - Cleanup code
-
 //! /BanIssue - Change Page to active-only banIssues
 //^ /user/[id] - Add ban history button
 //^ /user/[id]/banHistory - Page for user's banIssues
