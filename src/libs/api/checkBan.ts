@@ -3,16 +3,13 @@
 import dbConnect from "@/libs/db/dbConnect";
 import BanIssue from "@/libs/db/models/BanIssue";
 import { resolveExpiredBan } from "../banIssue";
+import { ActiveBanFilter } from "../utils";
 
 export async function checkBanAPI(id: string) {
   await dbConnect();
   try {
     await resolveExpiredBan();
-    const banIssue = await BanIssue.countDocuments({
-      user: id,
-      endDate: { $gt: new Date() },
-      isResolved: false,
-    });
+    const banIssue = await BanIssue.countDocuments({ user: id, ...ActiveBanFilter });
     return { success: true, isBanned: !!banIssue };
   } catch (error) {
     console.error(error);

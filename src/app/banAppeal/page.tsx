@@ -24,7 +24,7 @@ export default async function BanAppeals({
           <SearchFieldSP search={search} />
           <FilterDialog />
         </div>
-        <Suspense fallback={<BanAppealTableSkeleton />}>
+        <Suspense key={JSON.stringify(params)} fallback={<BanAppealTableSkeleton />}>
           <BanAppealTable page={page} limit={limit} search={search} session={session} />
         </Suspense>
       </div>

@@ -9,11 +9,10 @@ import { BanIssueStatus } from "@/components/banIssue/TableBodyCell";
 import BanIssueOptionButton from "@/components/banIssue/OptionButton";
 
 export default async function BanIssue({ params }: { params: Promise<{ id: string }> }) {
-  const session = await auth();
+  const [{ id }, session] = await Promise.all([params, auth()]);
   if (!session) return <main>You are not logged in</main>;
 
-  const { id } = await params;
-  const response = await getBanIssue(id);
+  const response = await getBanIssue(id, session);
   if (!response.data) return <main>{response.message ? response.message : "Cannot fetch data"}</main>;
 
   const { banIssue, banAppeals } = response.data;

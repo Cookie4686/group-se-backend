@@ -14,7 +14,7 @@ export const getBanIssuesDB = unstable_cache(
   ) => {
     // console.log("MISS");
     await dbConnect();
-    return (
+    const result = (
       await BanIssue.aggregate<
         | {
             data: (Omit<Omit<BanIssueType, "user">, "admin"> & { user: UserType; admin: UserType })[];
@@ -46,6 +46,7 @@ export const getBanIssuesDB = unstable_cache(
         { $project: { _id: 0, data: { $slice: ["$data", page * limit, limit] }, total: 1 } },
       ])
     )[0];
+    return { data: result?.data || [], total: result?.total || 0 };
   },
   undefined,
   { tags: ["banIssues"], revalidate: 300 }

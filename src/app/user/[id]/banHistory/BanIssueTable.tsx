@@ -3,23 +3,22 @@ import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow
 import { getBanIssues, resolveExpiredBan } from "@/libs/banIssue";
 import TablePaginationSP from "@/components/TablePaginationSP";
 import BanIssueTableBody from "./BanIssueTableBody";
-import { ActiveBanFilter } from "@/libs/utils";
 
-export default async function BanIssueTable({
+export default async function BanHistoryTable({
   page,
   limit,
   search,
-  redirected,
   session,
+  id,
 }: {
   page: number;
   limit: number;
   search: string;
-  redirected?: string;
   session: Session;
+  id: string;
 }) {
   await resolveExpiredBan();
-  const response = await getBanIssues(ActiveBanFilter, page, limit, search, session);
+  const response = await getBanIssues(undefined, page, limit, search, session, id);
   if (!response.data) return <main>Cannot fetch data</main>;
   const { data: banIssues } = response;
 
@@ -29,29 +28,28 @@ export default async function BanIssueTable({
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
-              <TableCell align="left">User</TableCell>
               <TableCell align="left">Issue Title</TableCell>
               <TableCell align="left">Issue Date</TableCell>
               <TableCell align="left">Status</TableCell>
               <TableCell align="center"></TableCell>
             </TableRow>
           </TableHead>
-          <BanIssueTableBody {...{ banIssues, redirected, session }} />
+          <BanIssueTableBody banIssues={banIssues} session={session} />
         </Table>
-        <TablePaginationSP {...{ page, limit }} total={response.total} />
+        <TablePaginationSP page={page} limit={limit} total={response.total} />
       </TableContainer>
     </Paper>
   );
 }
 
-export function BanIssueTableSkeleton() {
+export function BanHistoryTableSkeleton() {
   return (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
       <TableContainer sx={{ maxHeight: 440 }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
-              {[...Array(4)].map((e, i) => (
+              {[...Array(3)].map((e, i) => (
                 <TableCell align="left" key={i}>
                   <div className="h-4 w-12 animate-pulse rounded bg-gray-300"></div>
                 </TableCell>
@@ -61,15 +59,6 @@ export function BanIssueTableSkeleton() {
           </TableHead>
           <TableBody>
             <TableRow hover role="checkbox" tabIndex={-1}>
-              <TableCell align="left">
-                <div className="flex items-center gap-2">
-                  <div className="h-10 w-10 animate-pulse rounded-full bg-gray-300"></div>
-                  <div className="flex flex-col gap-1">
-                    <div className="h-4 w-8 animate-pulse rounded bg-gray-300"></div>
-                    <div className="h-4 w-24 animate-pulse rounded bg-gray-300"></div>
-                  </div>
-                </div>
-              </TableCell>
               <TableCell align="left">
                 <div className="h-4 w-36 animate-pulse rounded bg-gray-300"></div>
               </TableCell>

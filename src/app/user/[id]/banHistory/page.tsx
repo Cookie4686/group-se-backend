@@ -1,24 +1,32 @@
 import { auth } from "@/auth";
-import BanIssueTable, { BanIssueTableSkeleton } from "./BanIssueTable";
 import { readPaginationSearchParams, readSearchParams, SearchParams } from "@/utils";
 import SearchFieldSP from "@/components/SearchFieldSP";
 import { Button } from "@mui/material";
 import Link from "next/link";
 import { Suspense } from "react";
+import BanHistoryTable, { BanHistoryTableSkeleton } from "./BanIssueTable";
+import { getUser } from "@/libs/auth";
 
-export default async function BanIssues({ searchParams }: { searchParams: Promise<SearchParams> }) {
-  const session = await auth();
+export default async function BanHistory({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<SearchParams>;
+}) {
+  const [{ id }, sp, session] = await Promise.all([params, searchParams, auth()]);
   if (!session) return <main>You are not logged in</main>;
 
-  const params = await searchParams;
+  const response = await getUser(id);
+  if (!response.data) return <main>Cannot fetch User</main>;
+  const { data: user } = response;
 
-  const { page, limit = 5 } = readPaginationSearchParams(params);
-  const search = readSearchParams(params, "search") || "";
-  const redirected = readSearchParams(params, "redirected");
+  const { page, limit = 5 } = readPaginationSearchParams(sp);
+  const search = readSearchParams(sp, "search") || "";
 
   return (
     <main className="p-4">
-      <h1>Active Ban Issues</h1>
+      <h1>{user.name}&lsquo;s Ban History</h1>
       <div className="mx-auto max-w-5xl rounded-3xl border p-8">
         <div className="flex items-center justify-center gap-8 pb-2">
           {session.user.role == "admin" && (
@@ -32,8 +40,8 @@ export default async function BanIssues({ searchParams }: { searchParams: Promis
             </>
           )}
         </div>
-        <Suspense key={JSON.stringify(params)} fallback={<BanIssueTableSkeleton />}>
-          <BanIssueTable {...{ page, limit, search, redirected, session }} />
+        <Suspense key={JSON.stringify(sp)} fallback={<BanHistoryTableSkeleton />}>
+          <BanHistoryTable {...{ page, limit, search, session, id }} />
         </Suspense>
       </div>
     </main>

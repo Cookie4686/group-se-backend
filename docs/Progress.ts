@@ -3,9 +3,9 @@
 //? /CoworkingSpace/[id] - Make Reserve form a popup button
 //? /Reservations/[id] - Add more info
 
-//! /BanIssue - Change Page to active-only banIssues
-//^ /user/[id] - Add ban history button
-//^ /user/[id]/banHistory - Page for user's banIssues
+//* /BanIssue - Change Page to active-only banIssues
+//* /user/[id] - Add ban history button
+//* /user/[id]/banHistory - Page for user's banIssues
 
 //! /BanIssue/create - delete page and use ban from user/[id]/ban
 //$ /user/[id]/ban - Create ban from user's id

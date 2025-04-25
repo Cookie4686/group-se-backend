@@ -7,38 +7,18 @@ import { resolveBanIssue } from "@/libs/banIssue";
 import { useActionState, useEffect } from "react";
 import { Session } from "next-auth";
 import { useSnackpackContext } from "@/provider/SnackbarProvider";
-import UserInfo from "@/components/UserInfo";
-import { BanIssueDateCell, BanIssueStatus } from "@/components/banIssue/TableBodyCell";
+import { BanIssueStatus } from "@/components/banIssue/TableBodyCell";
 import BanIssueOptionButton from "@/components/banIssue/OptionButton";
 
 export default function BanIssueTableBody({
   banIssues,
-  redirected,
   session,
 }: {
   banIssues: (Omit<Omit<BanIssueType, "user">, "admin"> & { user: UserType; admin: UserType })[];
-  redirected?: string;
   session: Session;
 }) {
   const [editState, editAction, editPending] = useActionState(resolveBanIssue, undefined);
   const [, setSnackPack] = useSnackpackContext();
-
-  useEffect(() => {
-    if (redirected === "true") {
-      setSnackPack((prev) => [
-        ...prev,
-        {
-          anchorOrigin: { vertical: "bottom", horizontal: "right" },
-          key: new Date().getTime(),
-          children: (
-            <Alert severity="error" variant="filled" sx={{ width: "100%" }}>
-              You are banned
-            </Alert>
-          ),
-        },
-      ]);
-    }
-  }, [redirected, setSnackPack]);
 
   useEffect(() => {
     if (editState) {
@@ -66,11 +46,13 @@ export default function BanIssueTableBody({
         return (
           <TableRow key={e._id} hover role="checkbox" tabIndex={-1}>
             <TableCell align="left">
-              <UserInfo user={e.user} name email />
+              <span className="font-bold">{e.title}</span>
             </TableCell>
-            <TableCell align="left">{e.title}</TableCell>
             <TableCell align="left">
-              <BanIssueDateCell {...{ createdAt, endDate }} />
+              <div className="flex w-fit flex-col gap-1">
+                <span>Issue At: {createdAt.toLocaleString()}</span>
+                <span>End At: {endDate.toLocaleString()}</span>
+              </div>
             </TableCell>
             <TableCell align="left">
               <BanIssueStatus isResolved={e.isResolved} />

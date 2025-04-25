@@ -3,28 +3,49 @@
 import { z } from "zod";
 import { auth } from "@/auth";
 import dbConnect from "./db/dbConnect";
-import User from "./db/models/User";
+import User, { UserType } from "./db/models/User";
 import BanIssue, { type BanIssueType as BanIssueType } from "./db/models/BanIssue";
 import { revalidateTag } from "next/cache";
-import { FilterQuery } from "mongoose";
 import mongoose from "mongoose";
 import { getBanIssuesDB, getBanIssueDB } from "./db/banIssue";
 import { validateRegex } from "@/utils";
+import { Session } from "next-auth";
+
+/**
+ * "admin": System Admin (view, create, edit)
+ *
+ * "target": Ban issue's target User (view)
+ *
+ * "user": Other User or Guest (none)
+ */
+type BanIssuePrivilege = "admin" | "target" | "user";
+
+function getPrivilege(
+  banIssue: Omit<Omit<BanIssueType, "user">, "admin"> & { user: UserType; admin: UserType },
+  session?: Session | null
+): BanIssuePrivilege {
+  return (
+    session ?
+      session.user.id == banIssue.user._id ? "target"
+      : session.user.role == "admin" ? "admin"
+      : "user"
+    : "user"
+  );
+}
 
 export async function getBanIssues(
-  filter: FilterQuery<BanIssueType> = {},
+  filter: mongoose.FilterQuery<BanIssueType> = {},
   page: number = 0,
   limit: number = 5,
-  search: string = ""
+  search: string = "",
+  session: Session,
+  userID?: string
 ) {
-  const session = await auth();
-  if (!session) return { success: false, message: "unauthorized" };
-  if (session.user.role != "admin")
-    filter.user = mongoose.Types.ObjectId.createFromHexString(session.user.id);
+  if (userID || session.user.role !== "admin") {
+    filter.user = mongoose.Types.ObjectId.createFromHexString(userID || session.user.id);
+  }
   try {
-    const result = await getBanIssuesDB(filter, page, limit, validateRegex(search));
-    const data = result?.data || [];
-    const total = result?.total || 0;
+    const { data, total } = await getBanIssuesDB(filter, page, limit, validateRegex(search));
     return { success: true, total, count: data.length, data };
   } catch (err) {
     console.error(err);
@@ -32,18 +53,15 @@ export async function getBanIssues(
   return { success: false };
 }
 
-export async function getBanIssue(id: string) {
-  const session = await auth();
-  if (session) {
-    try {
-      const result = await getBanIssueDB(id);
-      if (!result) return { success: false, message: "Ban Issue not found" };
-      if (result.banIssue.user._id != session.user.id && session.user.role != "admin")
-        return { success: false, message: "No permission to view this ban issue" };
-      return { success: true, data: result };
-    } catch (error) {
-      console.log(error);
-    }
+export async function getBanIssue(id: string, session: Session) {
+  try {
+    const result = await getBanIssueDB(id);
+    if (!result) return { success: false, message: "Ban Issue not found" };
+    const privilege = getPrivilege(result.banIssue, session);
+    if (privilege == "user") return { success: false, message: "No permission to view this ban issue" };
+    return { success: true, data: result, privilege };
+  } catch (error) {
+    console.log(error);
   }
   return { success: false };
 }
