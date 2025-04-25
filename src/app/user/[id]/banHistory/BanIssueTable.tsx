@@ -1,5 +1,15 @@
 import { Session } from "next-auth";
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import Link from "next/link";
+import {
+  Button,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material";
 import { getBanIssues, resolveExpiredBan } from "@/libs/banIssue";
 import TablePaginationSP from "@/components/TablePaginationSP";
 import BanIssueTableBody from "./BanIssueTableBody";
@@ -31,7 +41,15 @@ export default async function BanHistoryTable({
               <TableCell align="left">Issue Title</TableCell>
               <TableCell align="left">Issue Date</TableCell>
               <TableCell align="left">Status</TableCell>
-              <TableCell align="center"></TableCell>
+              <TableCell align="center">
+                {session.user.role == "admin" && (
+                  <Link href={`/user/${id}/ban`}>
+                    <Button type="submit" color="error" variant="contained">
+                      Ban
+                    </Button>
+                  </Link>
+                )}
+              </TableCell>
             </TableRow>
           </TableHead>
           <BanIssueTableBody banIssues={banIssues} session={session} />

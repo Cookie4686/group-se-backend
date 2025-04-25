@@ -67,46 +67,45 @@ export async function getBanIssue(id: string, session: Session) {
 }
 
 const BanIssueSchema = z.object({
-  user: z.string(),
   title: z.string().max(50, { message: "Title can not be more than 50 characters" }),
   description: z.string().max(500, { message: "Description can not be more than 500 characters" }),
   endDate: z.string().datetime(),
 });
 export async function createBanIssue(formState: unknown, formData: FormData) {
   const session = await auth();
+  const id = formData.get("id")?.toString();
   if (!session || session.user.role != "admin") return { success: false, message: "Not authorized" };
+  if (!id) return { success: false, message: "Invalid Input (111)" };
   const data = Object.fromEntries(formData.entries());
   const validatedFields = await BanIssueSchema.safeParseAsync(data);
-  if (validatedFields.success) {
-    if (new Date(validatedFields.data.endDate) <= new Date(Date.now())) {
-      return { success: false, message: "You cannot pick time in the past" };
-    }
-    await dbConnect();
-    try {
-      const user = await User.findOne({ email: validatedFields.data.user });
-      if (!user) return { success: false, message: "user not found", data };
-      const isBanned = await BanIssue.countDocuments({
-        user: user._id,
-        endDate: { $gt: new Date() },
-        isResolved: false,
-      });
-      if (isBanned > 0) return { success: false, message: "user is already banned", data };
-
-      const banIssue = await BanIssue.insertOne({
-        ...validatedFields.data,
-        user: user._id,
-        admin: session.user.id,
-      });
-      if (banIssue) {
-        revalidateTag("banIssues");
-        return { success: true, data: banIssue.toObject() };
-      }
-    } catch (err) {
-      console.error(err);
-    }
-    return { success: false };
+  if (!validatedFields.success) return { success: false, error: validatedFields.error.flatten(), data };
+  if (new Date(validatedFields.data.endDate) <= new Date(Date.now())) {
+    return { success: false, message: "You cannot pick time in the past" };
   }
-  return { success: false, error: validatedFields.error.flatten(), data };
+  await dbConnect();
+  try {
+    const user = await User.findById(id);
+    if (!user) return { success: false, message: "user not found", data };
+    const isBanned = await BanIssue.countDocuments({
+      user: user._id,
+      endDate: { $gt: new Date() },
+      isResolved: false,
+    });
+    if (isBanned > 0) return { success: false, message: "user is already banned", data };
+
+    const banIssue = await BanIssue.insertOne({
+      ...validatedFields.data,
+      user: user._id,
+      admin: session.user.id,
+    });
+    if (banIssue) {
+      revalidateTag("banIssues");
+      return { success: true, data: banIssue.toObject() };
+    }
+  } catch (err) {
+    console.error(err);
+  }
+  return { success: false };
 }
 
 export async function resolveBanIssue(formState: unknown, formData: FormData) {

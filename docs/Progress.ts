@@ -1,18 +1,16 @@
 /******** (TODO) ********/
-//* /CoworkingSpace - Cleanup open-close time display
+//* /CoworkingSpace - Cleanup UI (open-close time display)
+//* /BanIssue - Cleanup Code
+//* /user/[id] - Cleanup Code
+//* /user/[id]/banHistory - Cleanup Code
+
 //? /CoworkingSpace/[id] - Make Reserve form a popup button
+//? /BanIssue/[id]/appeal - Change to a popup or in-page form
+//? /user/[id]/ban - Change to a popup or in-page form
+
 //? /Reservations/[id] - Add more info
 
-//* /BanIssue - Change Page to active-only banIssues
-//* /user/[id] - Add ban history button
-//* /user/[id]/banHistory - Page for user's banIssues
-
-//! /BanIssue/create - delete page and use ban from user/[id]/ban
-//$ /user/[id]/ban - Create ban from user's id
-
 //$ /user - Add all user list
-
-//? /BanIssue/[id]/appeal - Change to a popup or in-page form
 
 /******** (Page UI) ********/
 //* /Home

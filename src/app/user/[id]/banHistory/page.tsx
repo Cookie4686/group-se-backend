@@ -1,8 +1,5 @@
 import { auth } from "@/auth";
 import { readPaginationSearchParams, readSearchParams, SearchParams } from "@/utils";
-import SearchFieldSP from "@/components/SearchFieldSP";
-import { Button } from "@mui/material";
-import Link from "next/link";
 import { Suspense } from "react";
 import BanHistoryTable, { BanHistoryTableSkeleton } from "./BanIssueTable";
 import { getUser } from "@/libs/auth";
@@ -28,18 +25,6 @@ export default async function BanHistory({
     <main className="p-4">
       <h1>{user.name}&lsquo;s Ban History</h1>
       <div className="mx-auto max-w-5xl rounded-3xl border p-8">
-        <div className="flex items-center justify-center gap-8 pb-2">
-          {session.user.role == "admin" && (
-            <>
-              <SearchFieldSP search={search} />
-              <Link href="/banIssue/create">
-                <Button type="submit" color="primary" variant="contained">
-                  + New
-                </Button>
-              </Link>
-            </>
-          )}
-        </div>
         <Suspense key={JSON.stringify(sp)} fallback={<BanHistoryTableSkeleton />}>
           <BanHistoryTable {...{ page, limit, search, session, id }} />
         </Suspense>
