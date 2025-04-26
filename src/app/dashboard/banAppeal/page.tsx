@@ -1,6 +1,5 @@
-import { auth } from "@/auth";
 import BanAppealTable, { BanAppealTableSkeleton } from "./BanAppealTable";
-import { readPaginationSearchParams, readSearchParams } from "@/utils";
+import { authLoggedIn, readPaginationSearchParams, readSearchParams } from "@/utils";
 import SearchFieldSP from "@/components/SearchFieldSP";
 import FilterDialog from "./FilterDialog";
 import { Suspense } from "react";
@@ -10,9 +9,7 @@ export default async function BanAppeals({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const session = await auth();
-  if (!session) return <main>You are not logged in</main>;
-  const params = await searchParams;
+  const [params, session] = await Promise.all([searchParams, authLoggedIn("/dashboard/banAppeal")]);
   const { page, limit = 5 } = readPaginationSearchParams(params);
   const search = readSearchParams(params, "search") || "";
 

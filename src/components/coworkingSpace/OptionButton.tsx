@@ -1,5 +1,7 @@
-import OptionButton, { ActionItem, LinkItem } from "../OptionButton";
+import EllipsisHorizontalIcon from "@heroicons/react/24/outline/EllipsisHorizontalIcon";
+import Menu, { ActionItem, LinkItem } from "../Menu";
 import { deleteCoworkingSpace } from "@/libs/coworkingSpace";
+import IconButton from "@mui/material/IconButton";
 
 export default function CoworkingSpaceOptionButton({
   id,
@@ -15,10 +17,16 @@ export default function CoworkingSpaceOptionButton({
   deleteOption?: boolean;
 }) {
   return (
-    <OptionButton>
+    <Menu
+      buttonChildren={
+        <IconButton size="small">
+          <EllipsisHorizontalIcon width="1rem" height="1rem" />
+        </IconButton>
+      }
+    >
       {[
         ...(viewInfo ? [{ text: "View Info", href: `/coworking-space/${id}` }] : []),
-        ...(viewReserve ? [{ text: "View Reservations", href: `/coworking-space/${id}/reservations` }] : []),
+        ...(viewReserve ? [{ text: "View Reservations", href: `/dashboard/coworking-space/${id}` }] : []),
         ...(edit ? [{ text: "Edit", href: `/coworking-space/${id}/edit` }] : []),
       ].map(({ text, href }) => (
         <LinkItem text={text} href={href} key={text} />
@@ -32,6 +40,6 @@ export default function CoworkingSpaceOptionButton({
           text="Delete"
         />
       )}
-    </OptionButton>
+    </Menu>
   );
 }

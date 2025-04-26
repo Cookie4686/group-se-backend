@@ -1,15 +1,9 @@
 import { Suspense } from "react";
-import SearchFieldSP from "@/components/SearchFieldSP";
-import { readPaginationSearchParams, readSearchParams, SearchParams } from "@/utils";
-import FilterDialog from "./FilterDialog";
+import { authLoggedIn, readPaginationSearchParams, readSearchParams, SearchParams } from "@/utils";
 import ReserveTable, { ReserveTableSkeleton } from "./ReserveTable";
-import { auth } from "@/auth";
 
 export default async function Reservations({ searchParams }: { searchParams: Promise<SearchParams> }) {
-  const session = await auth();
-  if (!session) return <main>Login to view reservations</main>;
-
-  const params = await searchParams;
+  const [params, session] = await Promise.all([searchParams, authLoggedIn("/reservations")]);
   const { page, limit = 5 } = readPaginationSearchParams(params);
   const search = readSearchParams(params, "search") || "";
   const min = Number(readSearchParams(params, "min")) || undefined;
@@ -19,11 +13,7 @@ export default async function Reservations({ searchParams }: { searchParams: Pro
     <main className="p-4">
       <h1>My Reservations</h1>
       <div className="mx-auto max-w-5xl rounded-3xl border p-8">
-        <div className="flex items-center justify-center gap-4 pb-2">
-          <SearchFieldSP search={search} />
-          <FilterDialog />
-        </div>
-        <Suspense fallback={<ReserveTableSkeleton />}>
+        <Suspense key={JSON.stringify(params)} fallback={<ReserveTableSkeleton />}>
           <ReserveTable {...{ page, limit, search, min, max, session }} />
         </Suspense>
       </div>

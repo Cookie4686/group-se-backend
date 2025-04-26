@@ -9,6 +9,8 @@ import TableRow from "@mui/material/TableRow";
 import TablePaginationSP from "@/components/TablePaginationSP";
 import { getUserReservations } from "@/libs/reservations";
 import ReserveTableBody from "./ReserveTableBody";
+import SearchFieldSP from "@/components/SearchFieldSP";
+import FilterDialog from "./FilterDialog";
 
 export default async function ReserveTable({
   page,
@@ -41,10 +43,14 @@ export default async function ReserveTable({
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
-              <TableCell align="left">Name</TableCell>
+              <TableCell align="left">
+                <SearchFieldSP search={search} props={{ variant: "standard" }} />
+              </TableCell>
               <TableCell align="left">Date</TableCell>
               <TableCell align="left">Status</TableCell>
-              <TableCell align="center"></TableCell>
+              <TableCell align="center">
+                <FilterDialog />
+              </TableCell>
             </TableRow>
           </TableHead>
           <ReserveTableBody session={session} reservations={response.data} />

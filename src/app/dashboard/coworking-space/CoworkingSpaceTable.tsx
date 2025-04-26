@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
@@ -9,11 +8,11 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { getCoworkingSpaces } from "@/libs/coworkingSpace";
-import { concatAddress } from "@/utils";
 import SearchFieldSP from "@/components/SearchFieldSP";
 import TablePaginationSP from "@/components/TablePaginationSP";
 import { Session } from "next-auth";
 import CoworkingSpaceOptionButton from "@/components/coworkingSpace/OptionButton";
+import { CoworkingSpaceCell } from "@/components/coworkingSpace/TableBodyCell";
 
 export default async function CWSTable({
   page,
@@ -53,19 +52,7 @@ export default async function CWSTable({
               {coworkingSpaces.map((e) => (
                 <TableRow key={e._id} hover role="checkbox" tabIndex={-1}>
                   <TableCell align="left">
-                    <div className="flex items-center gap-2">
-                      <Image
-                        className="aspect-square h-12 rounded-xl object-cover"
-                        src={e.picture || "/img/BOT-learning-center.jpg"}
-                        alt="coworking image"
-                        width={48}
-                        height={48}
-                      />
-                      <div className="flex flex-col gap-1">
-                        <span className="font-bold">{e.name}</span>
-                        <span>{concatAddress(e)}</span>
-                      </div>
-                    </div>
+                    <CoworkingSpaceCell coworkingSpace={e} />
                   </TableCell>
                   <TableCell align="left">Status</TableCell>
                   <TableCell align="center">

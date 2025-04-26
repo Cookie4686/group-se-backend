@@ -52,7 +52,6 @@ export const getUserReservationsDB = unstable_cache(
 export const getCoworkingReservationsDB = unstable_cache(
   async (
     filter: mongoose.FilterQuery<ReservationType>,
-    cwsFilter: mongoose.FilterQuery<CWS>,
     coworkingSpaceID: string,
     page: number,
     limit: number
@@ -81,6 +80,8 @@ export const getCoworkingReservationsDB = unstable_cache(
         { $project: { _id: 0, data: { $slice: ["$data", page * limit, limit] }, total: 1 } },
       ])
     )[0];
+    console.log(result?.data);
+
     return { data: result?.data || [], total: result?.total || 0 };
   },
   undefined,

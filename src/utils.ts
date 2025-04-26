@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+import { auth } from "./auth";
 import { CWS } from "./libs/db/models/CoworkingSpace";
 
 const protectedPages = [
@@ -10,6 +12,14 @@ const protectedPages = [
 const protectedPathnameRegex = RegExp(`^(${protectedPages.flatMap((p) => p).join("|")})/?$`, "i");
 export function isProtectedPage(pathname: string) {
   return protectedPathnameRegex.test(pathname);
+}
+
+export async function authLoggedIn(pathname: string) {
+  const session = await auth();
+  if (!session) {
+    redirect(`/login?callbackUrl=${pathname}&redirected=true`);
+  }
+  return session;
 }
 
 export function concatAddress(coworkingSpace: CWS) {

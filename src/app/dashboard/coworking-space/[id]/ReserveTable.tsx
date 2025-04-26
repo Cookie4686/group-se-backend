@@ -10,12 +10,12 @@ import TablePaginationSP from "@/components/TablePaginationSP";
 import { getCoworkingReservations } from "@/libs/reservations";
 import ReserveTableBody from "./ReserveTableBody";
 import { CWS } from "@/libs/db/models/CoworkingSpace";
+import FilterDialog from "./FilterDialog";
 
 export default async function ReserveTable({
   id,
   page,
   limit,
-  search,
   min,
   max,
   coworkingSpace,
@@ -24,7 +24,6 @@ export default async function ReserveTable({
   id: string;
   page: number;
   limit: number;
-  search: string;
   min?: number;
   max?: number;
   coworkingSpace: CWS;
@@ -36,7 +35,6 @@ export default async function ReserveTable({
     min && max ? { personCount: { $gte: min, $lte: max } } : {},
     page,
     limit,
-    search,
     id
   );
   if (!response.data) return <main>Cannot fetch data</main>;
@@ -47,11 +45,12 @@ export default async function ReserveTable({
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
-              <TableCell align="left">Name</TableCell>
+              <TableCell align="left">User</TableCell>
               <TableCell align="left">Date</TableCell>
               <TableCell align="left">Status</TableCell>
-              <TableCell align="left">User</TableCell>
-              <TableCell align="center"></TableCell>
+              <TableCell align="center">
+                <FilterDialog />
+              </TableCell>
             </TableRow>
           </TableHead>
           <ReserveTableBody session={session} reservations={response.data} coworkingSpace={coworkingSpace} />

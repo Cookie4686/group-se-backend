@@ -13,7 +13,7 @@
 //$ /user - Add all user list
 
 /******** (Page UI) ********/
-//* /Home
+//  /Home
 //  /Login
 //  /Register
 
@@ -28,14 +28,12 @@
 //? /Dashboard
 //* /Dashboard/create
 
-//? /User
-//? /User/[id]
-//? /User/[id]/banHistory
+//$ /User
+//  /User/[id]
+//* /User/[id]/banHistory
 
 //? /BanIssue
-////  /BanIssue/create
 //* /BanIssue/[id]
-//// /BanIssue/[id]/appeal
 //* /BanIssue/[id][appeal]
 
 //* /BanAppeal

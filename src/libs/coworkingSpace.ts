@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidateTag, unstable_cache } from "next/cache";
-import { FilterQuery } from "mongoose";
+import mongoose, { FilterQuery } from "mongoose";
 import { z } from "zod";
 import { auth } from "@/auth";
 import dbConnect from "./db/dbConnect";
@@ -33,7 +33,12 @@ export async function getCoworkingSpaces<T extends CoworkingSpacePrivilage>(
   privilage?: T
 ) {
   if (privilage == "admin" && session) {
-    filter = { ...filter, ...(session.user.role != "admin" ? { owner: session.user.id } : {}) };
+    filter = {
+      ...filter,
+      ...(session.user.role != "admin" ?
+        { owner: mongoose.Types.ObjectId.createFromHexString(session.user.id) }
+      : {}),
+    };
   }
   try {
     const result = await unstable_cache(

@@ -1,17 +1,12 @@
-import { auth } from "@/auth";
 import BanIssueTable, { BanIssueTableSkeleton } from "./BanIssueTable";
-import { readPaginationSearchParams, readSearchParams, SearchParams } from "@/utils";
+import { authLoggedIn, readPaginationSearchParams, readSearchParams, SearchParams } from "@/utils";
 import SearchFieldSP from "@/components/SearchFieldSP";
 import { Button } from "@mui/material";
 import Link from "next/link";
 import { Suspense } from "react";
 
 export default async function BanIssues({ searchParams }: { searchParams: Promise<SearchParams> }) {
-  const session = await auth();
-  if (!session) return <main>You are not logged in</main>;
-
-  const params = await searchParams;
-
+  const [session, params] = await Promise.all([authLoggedIn("/banIssue"), searchParams]);
   const { page, limit = 5 } = readPaginationSearchParams(params);
   const search = readSearchParams(params, "search") || "";
   const redirected = readSearchParams(params, "redirected");

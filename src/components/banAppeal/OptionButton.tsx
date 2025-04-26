@@ -1,4 +1,6 @@
-import OptionButton, { ActionItem, LinkItem } from "../OptionButton";
+import EllipsisHorizontalIcon from "@heroicons/react/24/outline/EllipsisHorizontalIcon";
+import Menu, { LinkItem, ActionItem } from "../Menu";
+import IconButton from "@mui/material/IconButton";
 
 export default function BanAppealOptionButton({
   banIssueID,
@@ -17,7 +19,13 @@ export default function BanAppealOptionButton({
   };
 }) {
   return (
-    <OptionButton>
+    <Menu
+      buttonChildren={
+        <IconButton size="small">
+          <EllipsisHorizontalIcon width="1rem" height="1rem" />
+        </IconButton>
+      }
+    >
       {viewInfo && <LinkItem href={`/banIssue/${banIssueID}/${banAppealID}`} text="View Info" />}
       {edit
         && [
@@ -29,6 +37,6 @@ export default function BanAppealOptionButton({
             <input type="text" name="status" value={status} hidden readOnly />
           </ActionItem>
         ))}
-    </OptionButton>
+    </Menu>
   );
 }

@@ -39,23 +39,16 @@ export async function getCoworkingReservations(
   filter: mongoose.FilterQuery<ReservationType> = {},
   page: number = 0,
   limit: number = 5,
-  search: string = "",
   coworkingSpaceID: string
 ) {
   const session = await auth();
-  if (session) {
-    try {
-      const { data, total } = await getCoworkingReservationsDB(
-        filter,
-        { name: { $regex: validateRegex(search) } },
-        coworkingSpaceID,
-        page,
-        limit
-      );
-      return { success: true, total: total, count: data.length, data };
-    } catch (error) {
-      console.error(error);
-    }
+  if (!session) return { success: false, message: "Not logged in" };
+  try {
+    const { data, total } = await getCoworkingReservationsDB(filter, coworkingSpaceID, page, limit);
+
+    return { success: true, total: total, count: data.length, data };
+  } catch (error) {
+    console.error(error);
   }
   return { success: false };
 }

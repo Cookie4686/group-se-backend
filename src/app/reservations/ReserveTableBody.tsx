@@ -7,11 +7,8 @@ import { deleteReservation, getUserReservations, updateReservationStatus } from 
 import { useSnackpackContext } from "@/provider/SnackbarProvider";
 import { useActionState, useEffect } from "react";
 import ReservationOptionButton from "@/components/reservations/OptionButton";
-import {
-  ReserveCoworkingCell,
-  ReserveDateCell,
-  ReserveStatusCell,
-} from "@/components/reservations/TableBodyCell";
+import { ReserveDateCell, ReserveStatusCell } from "@/components/reservations/TableBodyCell";
+import { CoworkingSpaceCell } from "@/components/coworkingSpace/TableBodyCell";
 
 export default function ReserveTableBody({
   session,
@@ -54,7 +51,10 @@ export default function ReserveTableBody({
         return (
           <TableRow key={e._id} hover role="checkbox" tabIndex={-1}>
             <TableCell align="left">
-              <ReserveCoworkingCell coworkingSpace={e.coworkingSpace} />
+              <CoworkingSpaceCell
+                coworkingSpace={e.coworkingSpace}
+                menu={{ viewInfo: true, searchReservation: true, manageReservation: true }}
+              />
             </TableCell>
             <TableCell align="left">
               <ReserveDateCell {...{ startDate, endDate }} />
@@ -65,7 +65,7 @@ export default function ReserveTableBody({
             <TableCell align="center">
               <ReservationOptionButton
                 id={e._id}
-                view
+                viewInfo
                 edit={
                   e.approvalStatus == "pending" ?
                     {

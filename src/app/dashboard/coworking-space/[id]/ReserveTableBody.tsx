@@ -9,11 +9,7 @@ import { useActionState, useEffect } from "react";
 import UserInfo from "@/components/UserInfo";
 import { CWS } from "@/libs/db/models/CoworkingSpace";
 import ReservationOptionButton from "@/components/reservations/OptionButton";
-import {
-  ReserveCoworkingCell,
-  ReserveDateCell,
-  ReserveStatusCell,
-} from "@/components/reservations/TableBodyCell";
+import { ReserveDateCell, ReserveStatusCell } from "@/components/reservations/TableBodyCell";
 
 export default function ReserveTableBody({
   session,
@@ -59,7 +55,7 @@ export default function ReserveTableBody({
         return (
           <TableRow key={e._id} hover role="checkbox" tabIndex={-1}>
             <TableCell align="left">
-              <ReserveCoworkingCell coworkingSpace={coworkingSpace} />
+              <UserInfo user={e.user} name />
             </TableCell>
             <TableCell align="left">
               <ReserveDateCell {...{ startDate, endDate }} />
@@ -67,17 +63,10 @@ export default function ReserveTableBody({
             <TableCell align="left">
               <ReserveStatusCell approvalStatus={e.approvalStatus} personCount={e.personCount} />
             </TableCell>
-            <TableCell align="left">
-              <UserInfo
-                user={e.user}
-                name
-                avatarIconProps={{ sx: { width: 24, height: 24, fontSize: "0.875rem" } }}
-              />
-            </TableCell>
             <TableCell align="center">
               <ReservationOptionButton
                 id={e._id}
-                view
+                viewInfo
                 edit={
                   e.approvalStatus == "pending" ?
                     {

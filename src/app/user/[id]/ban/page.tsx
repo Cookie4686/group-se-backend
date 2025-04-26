@@ -2,9 +2,11 @@ import { getUser } from "@/libs/auth";
 import Link from "next/link";
 import UserBanForm from "./Form";
 import ArrowLeftIcon from "@heroicons/react/24/outline/ArrowLeftIcon";
+import { authLoggedIn } from "@/utils";
 
 export default async function BanUser({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  await authLoggedIn(`/user/${id}/ban`);
   const response = await getUser(id);
   if (!response.data) return <main>Cannot fetch User</main>;
   const { data: user } = response;

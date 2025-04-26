@@ -1,13 +1,15 @@
-import OptionButton, { ActionItem, LinkItem } from "../OptionButton";
+import EllipsisHorizontalIcon from "@heroicons/react/24/outline/EllipsisHorizontalIcon";
+import Menu, { ActionItem, LinkItem } from "../Menu";
+import IconButton from "@mui/material/IconButton";
 
 export default function ReservationOptionButton({
   id,
-  view,
+  viewInfo,
   edit,
   deleteOption,
 }: {
   id: string;
-  view?: boolean;
+  viewInfo?: boolean;
   edit?: {
     cancel?: boolean;
     approve?: boolean;
@@ -18,8 +20,14 @@ export default function ReservationOptionButton({
   deleteOption?: { action?: React.FormHTMLAttributes<HTMLFormElement>["action"]; pending?: boolean };
 }) {
   return (
-    <OptionButton>
-      {view && <LinkItem text="View Info" href={`/reservations/${id}`} />}
+    <Menu
+      buttonChildren={
+        <IconButton size="small">
+          <EllipsisHorizontalIcon width="1rem" height="1rem" />
+        </IconButton>
+      }
+    >
+      {viewInfo && <LinkItem text="View Info" href={`/reservations/${id}`} />}
       {edit
         && [
           ...(edit.cancel ? [{ text: "Cancel", status: "canceled" }] : []),
@@ -36,6 +44,6 @@ export default function ReservationOptionButton({
           <input type="text" name="id" value={id} hidden readOnly />
         </ActionItem>
       )}
-    </OptionButton>
+    </Menu>
   );
 }

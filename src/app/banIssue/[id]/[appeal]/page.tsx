@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { auth } from "@/auth";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { getBanAppeal, resolveBanAppeal } from "@/libs/banAppeal";
 import AvatarIcon from "@/components/AvatarIcon";
@@ -7,13 +6,13 @@ import CommentForm from "./CommentForm";
 import { BanIssueStatus } from "@/components/banIssue/TableBodyCell";
 import { AppealStatus } from "@/components/banAppeal/TableBodyCell";
 import BanAppealOptionButton from "@/components/banAppeal/OptionButton";
+import { authLoggedIn } from "@/utils";
 
 export default async function BanAppeal({ params }: { params: Promise<{ id: string; appeal: string }> }) {
-  const session = await auth();
-  if (!session) return <main>You are not logged in</main>;
-
-  const { appeal } = await params;
+  const { id, appeal } = await params;
+  const session = await authLoggedIn(`/banIssue/${id}/${appeal}`);
   const response = await getBanAppeal(appeal);
+
   if (!response.data) return <main>Cannot fetch data</main>;
 
   const { data: banAppeal } = response;

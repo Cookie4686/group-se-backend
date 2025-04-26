@@ -3,15 +3,14 @@ import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { getBanIssue, resolveBanIssue } from "@/libs/banIssue";
 import AvatarIcon from "@/components/AvatarIcon";
 import clsx from "clsx";
-import { auth } from "@/auth";
 import { Button } from "@mui/material";
 import { BanIssueStatus } from "@/components/banIssue/TableBodyCell";
 import BanIssueOptionButton from "@/components/banIssue/OptionButton";
+import { authLoggedIn } from "@/utils";
 
 export default async function BanIssue({ params }: { params: Promise<{ id: string }> }) {
-  const [{ id }, session] = await Promise.all([params, auth()]);
-  if (!session) return <main>You are not logged in</main>;
-
+  const { id } = await params;
+  const session = await authLoggedIn(`/banIssue/${id}`);
   const response = await getBanIssue(id, session);
   if (!response.data) return <main>{response.message ? response.message : "Cannot fetch data"}</main>;
 

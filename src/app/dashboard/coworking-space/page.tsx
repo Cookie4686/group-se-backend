@@ -1,5 +1,4 @@
-import { auth } from "@/auth";
-import { readPaginationSearchParams, readSearchParams } from "@/utils";
+import { authLoggedIn, readPaginationSearchParams, readSearchParams } from "@/utils";
 import CWSTable from "./CoworkingSpaceTable";
 
 export default async function Dashboard({
@@ -7,9 +6,7 @@ export default async function Dashboard({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  const [params, session] = await Promise.all([searchParams, auth()]);
-  if (!session) return <main>You are not logged in</main>;
-
+  const [params, session] = await Promise.all([searchParams, authLoggedIn("/dashboard/coworking-space")]);
   const { page, limit = 15 } = readPaginationSearchParams(params);
   const search = readSearchParams(params, "search") || "";
 
