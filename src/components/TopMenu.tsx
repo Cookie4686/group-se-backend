@@ -36,7 +36,7 @@ export default function TopMenu({ session }: { session: Session | null }) {
             <div
               className={clsx(
                 "absolute bottom-0 h-[1px] bg-black transition-all duration-500",
-                href === pathname ? "left-0 w-full" : "left-1/2 w-0"
+                pathname.startsWith(href) ? "left-0 w-full" : "left-1/2 w-0"
               )}
             ></div>
           </Link>

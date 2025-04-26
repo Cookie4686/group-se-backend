@@ -42,7 +42,7 @@ export default async function BanHistoryTable({
               <TableCell align="left">Issue Date</TableCell>
               <TableCell align="left">Status</TableCell>
               <TableCell align="center">
-                {session.user.role == "admin" && (
+                {session.user.role == "admin" && session.user.id != id && (
                   <Link href={`/user/${id}/ban`}>
                     <Button type="submit" color="error" variant="contained">
                       Ban
