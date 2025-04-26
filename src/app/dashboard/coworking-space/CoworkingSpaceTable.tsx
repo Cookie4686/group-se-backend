@@ -56,7 +56,14 @@ export default async function CWSTable({
                   </TableCell>
                   <TableCell align="left">Status</TableCell>
                   <TableCell align="center">
-                    <CoworkingSpaceOptionButton id={e._id} viewInfo viewReserve edit deleteOption />
+                    <CoworkingSpaceOptionButton
+                      id={e._id}
+                      viewInfo
+                      viewReserve
+                      viewDashboard
+                      edit
+                      deleteOption
+                    />
                   </TableCell>
                 </TableRow>
               ))}

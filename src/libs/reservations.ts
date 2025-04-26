@@ -45,7 +45,6 @@ export async function getCoworkingReservations(
   if (!session) return { success: false, message: "Not logged in" };
   try {
     const { data, total } = await getCoworkingReservationsDB(filter, coworkingSpaceID, page, limit);
-
     return { success: true, total: total, count: data.length, data };
   } catch (error) {
     console.error(error);

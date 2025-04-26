@@ -32,7 +32,13 @@ export default async function CoworkingSpaceDetailPage({ params }: { params: Pro
               <div className="flex w-full items-center justify-between">
                 <h1 className="!text-left font-bold">{coworkingSpace.name}</h1>
                 {coworkingSpace.privilage == "admin" && (
-                  <CoworkingSpaceOptionButton id={coworkingSpace._id} edit viewReserve deleteOption />
+                  <CoworkingSpaceOptionButton
+                    id={coworkingSpace._id}
+                    edit
+                    viewReserve
+                    viewDashboard
+                    deleteOption
+                  />
                 )}
               </div>
             </div>

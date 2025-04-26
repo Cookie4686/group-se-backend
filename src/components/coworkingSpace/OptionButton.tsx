@@ -7,12 +7,14 @@ export default function CoworkingSpaceOptionButton({
   id,
   viewInfo,
   viewReserve,
+  viewDashboard,
   edit,
   deleteOption,
 }: {
   id: string;
   viewInfo?: boolean;
   viewReserve?: boolean;
+  viewDashboard?: boolean;
   edit?: boolean;
   deleteOption?: boolean;
 }) {
@@ -27,6 +29,9 @@ export default function CoworkingSpaceOptionButton({
       {[
         ...(viewInfo ? [{ text: "View Info", href: `/coworking-space/${id}` }] : []),
         ...(viewReserve ? [{ text: "View Reservations", href: `/dashboard/coworking-space/${id}` }] : []),
+        ...(viewDashboard ?
+          [{ text: "View Dashboard", href: `/dashboard/coworking-space/${id}/dashboard` }]
+        : []),
         ...(edit ? [{ text: "Edit", href: `/coworking-space/${id}/edit` }] : []),
       ].map(({ text, href }) => (
         <LinkItem text={text} href={href} key={text} />
