@@ -32,6 +32,12 @@ export function readSearchParams(params: SearchParams, key: string) {
   return params[key] instanceof Array ? params[key][0] : params[key];
 }
 
+export function readMutipleSearchParams<T extends string>(params: SearchParams, ...keys: T[]) {
+  return Object.fromEntries(keys.map((key) => [key, readSearchParams(params, key)])) as {
+    [P in T]: ReturnType<typeof readSearchParams>;
+  };
+}
+
 export function readPaginationSearchParams(params: SearchParams) {
   return {
     page: (Number(readSearchParams(params, "page")) || 1) - 1,

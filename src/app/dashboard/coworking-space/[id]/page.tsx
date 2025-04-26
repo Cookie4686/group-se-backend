@@ -15,9 +15,9 @@ export default async function Reservations({
   const { page, limit = 5 } = readPaginationSearchParams(sp);
   const min = Number(readSearchParams(sp, "min")) || undefined;
   const max = Number(readSearchParams(sp, "max")) || undefined;
+  const status = readSearchParams(sp, "status");
 
   const response = await getCoworkingSpace(id);
-  console.log(response);
 
   if (!response.data) return <main>Cannot fetch data</main>;
   const { data: coworkingSpace } = response;
@@ -30,7 +30,7 @@ export default async function Reservations({
       <h1>{coworkingSpace.name}&lsquo;s Reservations</h1>
       <div className="mx-auto max-w-5xl rounded-3xl border p-8">
         <Suspense fallback={<ReserveTableSkeleton />}>
-          <ReserveTable {...{ id, page, limit, min, max, session, coworkingSpace }} />
+          <ReserveTable {...{ id, page, limit, min, max, status, session, coworkingSpace }} />
         </Suspense>
       </div>
     </main>

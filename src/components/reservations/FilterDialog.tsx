@@ -10,6 +10,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
 import Slider from "@mui/material/Slider";
 import { AdjustmentsHorizontalIcon, UsersIcon } from "@heroicons/react/24/outline";
+import { FormControlLabel, Checkbox } from "@mui/material";
 
 export default function FilterDialog() {
   const [pathname, searchParams, { replace }] = [usePathname(), useSearchParams(), useRouter()];
@@ -19,13 +20,30 @@ export default function FilterDialog() {
     Number(searchParams.get("max")) || 3,
   ]);
 
+  const statusArray = ["pending", "canceled", "approved", "rejected"] as const;
+  const [checked, setChecked] = useState(() => {
+    const status = searchParams.get("status")?.split(" ");
+    return statusArray.map((e) => !!status?.includes(e));
+  });
+  const handleCheckAll = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setChecked(new Array(4).fill(event.target.checked));
+  };
+  const handleCheckChange = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    setChecked((prev) => {
+      const arr = [...prev];
+      arr[index] = event.target.checked;
+      return arr;
+    });
+  };
+
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const handleClear = () => {
     const params = new URLSearchParams(searchParams);
-    if (params.has("min") || params.has("max")) {
+    if (params.has("min") || params.has("max") || params.has("status")) {
       params.delete("min");
       params.delete("max");
+      params.delete("status");
       params.delete("page");
     }
     replace(`${pathname}?${params.toString()}`);
@@ -33,13 +51,15 @@ export default function FilterDialog() {
   };
   const handleSubmit = () => {
     const params = new URLSearchParams(searchParams);
-    if (value) {
+    if (value || statusArray) {
       params.set("min", value[0].toString());
       params.set("max", value[1].toString());
+      params.set("status", statusArray.filter((_, idx) => checked[idx]).join(" "));
       params.delete("page");
     } else {
       params.delete("min");
       params.delete("max");
+      params.delete("status");
     }
     replace(`${pathname}?${params.toString()}`);
     handleClose();
@@ -53,7 +73,7 @@ export default function FilterDialog() {
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Filters</DialogTitle>
         <DialogContent>
-          <div className="py-4">
+          <div className="flex flex-col gap-2 py-4">
             <div className="flex items-center gap-4 pt-4">
               <UsersIcon width="2rem" height="2rem" />
               <Slider
@@ -65,6 +85,25 @@ export default function FilterDialog() {
                 valueLabelDisplay="auto"
                 onChange={(e, value) => setValue(value)}
               />
+            </div>
+            <div>
+              <FormControlLabel
+                label="All"
+                control={
+                  <Checkbox
+                    checked={checked.every((e) => e == true)}
+                    indeterminate={!checked.every((e, _, arr) => e == arr[0])}
+                    onChange={handleCheckAll}
+                  />
+                }
+              />
+              {statusArray.map((e, idx) => (
+                <FormControlLabel
+                  label={e}
+                  key={e}
+                  control={<Checkbox checked={checked[idx]} onChange={(e) => handleCheckChange(e, idx)} />}
+                />
+              ))}
             </div>
             <Button variant="contained" color="error" onClick={handleClear}>
               Clear Filter

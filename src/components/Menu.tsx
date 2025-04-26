@@ -13,21 +13,14 @@ export default function Menu({
 }) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => setAnchorEl(event.currentTarget);
+  const handleClick = (event: React.MouseEvent<HTMLDivElement>) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
   return (
     <div>
-      <button
-        className="cursor-pointer"
-        onClick={handleClick}
-        id="basic-button"
-        aria-controls={open ? "basic-menu" : undefined}
-        aria-expanded={open ? "true" : undefined}
-        aria-haspopup="true"
-      >
+      <div className="cursor-pointer" onClick={handleClick}>
         {buttonChildren}
-      </button>
+      </div>
       <MuiMenu
         id="basic-menu"
         anchorEl={anchorEl}

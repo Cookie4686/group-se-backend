@@ -10,7 +10,7 @@ import TablePaginationSP from "@/components/TablePaginationSP";
 import { getCoworkingReservations } from "@/libs/reservations";
 import ReserveTableBody from "./ReserveTableBody";
 import { CWS } from "@/libs/db/models/CoworkingSpace";
-import FilterDialog from "./FilterDialog";
+import FilterDialog from "@/components/reservations/FilterDialog";
 
 export default async function ReserveTable({
   id,
@@ -18,6 +18,7 @@ export default async function ReserveTable({
   limit,
   min,
   max,
+  status,
   coworkingSpace,
   session,
 }: {
@@ -26,13 +27,15 @@ export default async function ReserveTable({
   limit: number;
   min?: number;
   max?: number;
+  status?: string;
   coworkingSpace: CWS;
   session: Session;
 }) {
-  // For loading test
-  // await new Promise((resolve) => setTimeout(resolve, 3000));
   const response = await getCoworkingReservations(
-    min && max ? { personCount: { $gte: min, $lte: max } } : {},
+    {
+      ...(min && max ? { personCount: { $gte: min, $lte: max } } : {}),
+      ...(status ? { approvalStatus: { $in: status.split(" ") } } : {}),
+    },
     page,
     limit,
     id

@@ -10,7 +10,7 @@ import TablePaginationSP from "@/components/TablePaginationSP";
 import { getUserReservations } from "@/libs/reservations";
 import ReserveTableBody from "./ReserveTableBody";
 import SearchFieldSP from "@/components/SearchFieldSP";
-import FilterDialog from "./FilterDialog";
+import FilterDialog from "@/components/reservations/FilterDialog";
 
 export default async function ReserveTable({
   page,
@@ -18,6 +18,7 @@ export default async function ReserveTable({
   search,
   min,
   max,
+  status,
   session,
 }: {
   page: number;
@@ -25,12 +26,16 @@ export default async function ReserveTable({
   search: string;
   min?: number;
   max?: number;
+  status?: string;
   session: Session;
 }) {
   // For loading test
   // await new Promise((resolve) => setTimeout(resolve, 3000));
   const response = await getUserReservations(
-    min && max ? { personCount: { $gte: min, $lte: max } } : {},
+    {
+      ...(min && max ? { personCount: { $gte: min, $lte: max } } : {}),
+      ...(status ? { approvalStatus: { $in: status.split(" ") } } : {}),
+    },
     page,
     limit,
     search
