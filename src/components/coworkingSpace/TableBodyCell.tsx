@@ -11,26 +11,31 @@ export function CoworkingSpaceCell({
   menu,
 }: {
   coworkingSpace: CWS;
-  menu?: { viewInfo?: boolean; searchReservation?: boolean; manageReservation?: boolean };
+  menu?: {
+    viewInfo?: boolean;
+    searchReservation?: boolean;
+    manageReservation?: boolean;
+    viewDashboard?: boolean;
+  };
 }) {
   const [pathname, searchParams] = [usePathname(), useSearchParams()];
   const { replace } = useRouter();
 
+  const imageElement = (
+    <Image
+      className="aspect-square h-12 rounded object-cover"
+      src={coworkingSpace.picture || "/img/BOT-learning-center.jpg"}
+      alt="coworking image"
+      width={48}
+      height={48}
+      sizes="96px"
+    />
+  );
+
   return (
     <div className="flex items-center gap-4">
       {menu ?
-        <Menu
-          buttonChildren={
-            <Image
-              className="aspect-square h-12 rounded object-cover"
-              src={coworkingSpace.picture || "/img/BOT-learning-center.jpg"}
-              alt="coworking image"
-              width={48}
-              height={48}
-              sizes="96px"
-            />
-          }
-        >
+        <Menu buttonChildren={imageElement}>
           {menu.viewInfo && (
             <LinkItem text="View CoworkingSpace" href={`/coworking-space/${coworkingSpace._id}`} />
           )}
@@ -47,16 +52,14 @@ export function CoworkingSpaceCell({
           {menu.manageReservation && (
             <LinkItem text="Manage Reservations" href={`/dashboard/coworking-space/${coworkingSpace._id}`} />
           )}
+          {menu.viewDashboard && (
+            <LinkItem
+              text="View Dashboard"
+              href={`/dashboard/coworking-space/${coworkingSpace._id}/dashboard`}
+            />
+          )}
         </Menu>
-      : <Image
-          className="aspect-square h-12 rounded object-cover"
-          src={coworkingSpace.picture || "/img/BOT-learning-center.jpg"}
-          alt="coworking image"
-          width={48}
-          height={48}
-          sizes="96px"
-        />
-      }
+      : imageElement}
       <div className="flex flex-col gap-2">
         <span className="font-bold">{coworkingSpace.name}</span>
         <span>{concatAddress(coworkingSpace)}</span>

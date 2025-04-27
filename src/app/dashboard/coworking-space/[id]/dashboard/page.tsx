@@ -1,20 +1,35 @@
+import { getCoworkingSpace } from "@/libs/coworkingSpace";
 import { getCoworkingSpaceFrequency, getCoworkingSpaceTotalReservation } from "@/libs/dashboard";
 import { authLoggedIn } from "@/utils";
 import { Button } from "@mui/material";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { clsx } from "clsx";
+import mongoose from "mongoose";
 
 export default async function CoworkingSpaceDashboard({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  await authLoggedIn(`/dashboard/coworking-space/${id}/dashboard`);
+  const session = await authLoggedIn(`/dashboard/coworking-space/${id}/dashboard`);
+  const response = await getCoworkingSpace(id, session);
+  if (!response.data) return <main>Cannot fetch data</main>;
+  const { data: coworkingSpace } = response;
   const [status, frequency] = await Promise.all([
-    getCoworkingSpaceTotalReservation(id),
-    getCoworkingSpaceFrequency(id),
+    getCoworkingSpaceTotalReservation(
+      coworkingSpace.privilage == "user" ?
+        { user: mongoose.Types.ObjectId.createFromHexString(session.user.id) }
+      : {},
+      id
+    ),
+    getCoworkingSpaceFrequency(
+      coworkingSpace.privilage == "user" ?
+        { user: mongoose.Types.ObjectId.createFromHexString(session.user.id) }
+      : {},
+      id
+    ),
   ]);
 
   return (
     <main>
-      <h1>Coworking Space Dashboard</h1>
+      <h1>{coworkingSpace.name}&lsquo;s Dashboard</h1>
       <section className="rounded-lg border-2 shadow-xl">
         <h2 className="mb-4 text-center text-xl font-bold">Past Approval Status</h2>
         {status.data ?
@@ -44,7 +59,7 @@ export default async function CoworkingSpaceDashboard({ params }: { params: Prom
               <div className="pt-[6px]">: {status.data.total}</div>
             </div>
             <div className="mt-5 mb-6 flex flex-row font-bold">
-              <Button variant="contained" href={`/dashboard/restaurants/${id}/reservations`}>
+              <Button variant="contained" href={`/dashboard/coworking-space/${id}`}>
                 Manage Reservation
               </Button>
             </div>
@@ -56,7 +71,16 @@ export default async function CoworkingSpaceDashboard({ params }: { params: Prom
           <BarChart
             height={300}
             xAxis={[{ label: "time", scaleType: "band", data: frequency.data.label }]}
-            series={frequency.data.data.map((e) => ({ label: e.label, data: e.data, stack: "status" }))}
+            series={frequency.data.data.map((e) => ({
+              label: e.label,
+              data: e.data,
+              stack: "status",
+              color:
+                e.label == "Approved" ? "#00c951"
+                : e.label == "Pending" ? "#ffd230"
+                : e.label == "Rejected" ? "#fb2c36"
+                : "#ffa2a2",
+            }))}
           />
         : <div>Cannot fetch data</div>}
       </section>

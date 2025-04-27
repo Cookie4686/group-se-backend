@@ -21,9 +21,9 @@ export default function FilterDialog() {
   ]);
 
   const statusArray = ["pending", "canceled", "approved", "rejected"] as const;
-  const [checked, setChecked] = useState(() => {
+  const [checked, setChecked] = useState<boolean[]>(() => {
     const status = searchParams.get("status")?.split(" ");
-    return statusArray.map((e) => !!status?.includes(e));
+    return status ? statusArray.map((e) => !!status?.includes(e)) : new Array(4).fill(true);
   });
   const handleCheckAll = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(new Array(4).fill(event.target.checked));

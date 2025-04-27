@@ -11,6 +11,8 @@ import { getCoworkingReservations } from "@/libs/reservations";
 import ReserveTableBody from "./ReserveTableBody";
 import { CWS } from "@/libs/db/models/CoworkingSpace";
 import FilterDialog from "@/components/reservations/FilterDialog";
+import { CoworkingSpacePrivilage } from "@/libs/coworkingSpace";
+import mongoose from "mongoose";
 
 export default async function ReserveTable({
   id,
@@ -21,6 +23,7 @@ export default async function ReserveTable({
   status,
   coworkingSpace,
   session,
+  privilege,
 }: {
   id: string;
   page: number;
@@ -30,9 +33,11 @@ export default async function ReserveTable({
   status?: string;
   coworkingSpace: CWS;
   session: Session;
+  privilege: CoworkingSpacePrivilage;
 }) {
   const response = await getCoworkingReservations(
     {
+      ...(privilege == "user" ? { user: mongoose.Types.ObjectId.createFromHexString(session.user.id) } : {}),
       ...(min && max ? { personCount: { $gte: min, $lte: max } } : {}),
       ...(status ? { approvalStatus: { $in: status.split(" ") } } : {}),
     },

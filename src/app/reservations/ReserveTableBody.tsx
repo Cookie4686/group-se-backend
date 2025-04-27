@@ -53,7 +53,12 @@ export default function ReserveTableBody({
             <TableCell align="left">
               <CoworkingSpaceCell
                 coworkingSpace={e.coworkingSpace}
-                menu={{ viewInfo: true, searchReservation: true, manageReservation: true }}
+                menu={{
+                  viewInfo: true,
+                  searchReservation: true,
+                  manageReservation: true,
+                  viewDashboard: true,
+                }}
               />
             </TableCell>
             <TableCell align="left">

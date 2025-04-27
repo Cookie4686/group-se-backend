@@ -17,7 +17,7 @@ const NotLoggedInText = "You are not logged in";
  *
  * "admin": Admin or coworkingSpace's Owner (view, edit, delete)
  */
-type CoworkingSpacePrivilage = "admin" | "user";
+export type CoworkingSpacePrivilage = "admin" | "user";
 
 function getPrivilage(coworkingSpace: CWS, session?: Session | null): CoworkingSpacePrivilage {
   return session && (session.user.role == "admin" || session.user.id == coworkingSpace.owner) ?

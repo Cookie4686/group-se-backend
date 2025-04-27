@@ -62,63 +62,64 @@ export async function getCoworkingSpaceFrequencyDB(
         await Reservation.aggregate<
           { data: { label: string; data: number[] }[]; label: string[] } | undefined
         >([
+          { $match: { ...filter, coworkingSpace: mongoose.Types.ObjectId.createFromHexString(id) } },
           {
-            $match: {
-              ...filter,
-              coworkingSpace: mongoose.Types.ObjectId.createFromHexString(id),
-              $expr: { $gt: ["$endDate", "$startDate"] },
+            $set: {
+              startDate: {
+                $dateFromParts: {
+                  year: { $year: "$startDate" },
+                  month: { $month: "$startDate" },
+                  day: { $dayOfMonth: "$startDate" },
+                  hour: { $hour: "$startDate" },
+                  minute: {
+                    $subtract: [{ $minute: "$startDate" }, { $mod: [{ $minute: "$startDate" }, 30] }],
+                  },
+                },
+              },
+              endDate: {
+                $dateFromParts: {
+                  year: { $year: "$endDate" },
+                  month: { $month: "$endDate" },
+                  day: { $dayOfMonth: "$endDate" },
+                  hour: { $hour: "$endDate" },
+                  minute: { $subtract: [{ $minute: "$endDate" }, { $mod: [{ $minute: "$endDate" }, 30] }] },
+                },
+              },
             },
           },
           {
             $replaceRoot: {
               newRoot: {
-                data: [
-                  {
-                    _id: "$_id",
-                    time: {
-                      $dateFromParts: {
-                        year: { $year: "$startDate" },
-                        month: { $month: "$startDate" },
-                        day: { $dayOfMonth: "$startDate" },
-                        hour: { $hour: "$startDate" },
-                        minute: {
-                          $subtract: [{ $minute: "$startDate" }, { $mod: [{ $minute: "$startDate" }, 30] }],
-                        },
-                      },
-                    },
-                  },
-                  {
-                    _id: "$_id",
-                    time: {
-                      $dateFromParts: {
-                        year: { $year: "$endDate" },
-                        month: { $month: "$endDate" },
-                        day: { $dayOfMonth: "$endDate" },
-                        hour: { $hour: "$endDate" },
-                        minute: {
-                          $subtract: [{ $minute: "$endDate" }, { $mod: [{ $minute: "$endDate" }, 30] }],
-                        },
-                      },
-                    },
-                  },
-                ],
+                data: {
+                  $cond: [
+                    { $expr: { $eq: ["$startDate", "$endDate"] } },
+                    [{ _id: "$_id", time: "$startDate" }],
+                    [
+                      { _id: "$_id", time: "$startDate" },
+                      { _id: "$_id", time: "$endDate" },
+                    ],
+                  ],
+                },
               },
             },
           },
           { $unwind: { path: "$data" } },
-          { $replaceRoot: { newRoot: "$data" } },
           {
             $densify: {
-              field: "time",
-              partitionByFields: ["_id"],
+              field: "data.time",
+              partitionByFields: ["data._id"],
               range: { step: 30, unit: "minute", bounds: "partition" },
             },
           },
-          { $lookup: { from: "reservations", localField: "_id", foreignField: "_id", as: "reservation" } },
+          {
+            $lookup: { from: "reservations", localField: "data._id", foreignField: "_id", as: "reservation" },
+          },
           { $unwind: { path: "$reservation" } },
           {
             $group: {
-              _id: { $dateFromParts: { year: 1, hour: { $hour: "$time" }, minute: { $minute: "$time" } } },
+              _id: {
+                $dateFromParts: { year: 1, hour: { $hour: "$data.time" }, minute: { $minute: "$data.time" } },
+              },
               approved: { $sum: { $cond: [{ $eq: ["$reservation.approvalStatus", "approved"] }, 1, 0] } },
               rejected: { $sum: { $cond: [{ $eq: ["$reservation.approvalStatus", "rejected"] }, 1, 0] } },
               pending: { $sum: { $cond: [{ $eq: ["$reservation.approvalStatus", "pending"] }, 1, 0] } },

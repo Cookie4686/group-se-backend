@@ -22,15 +22,15 @@ export default async function Reservations({
   if (!response.data) return <main>Cannot fetch data</main>;
   const { data: coworkingSpace } = response;
 
-  if (session.user.role != "admin" && session.user.id != coworkingSpace.owner)
-    return <main>No permission to view this page</main>;
-
   return (
     <main className="p-4">
       <h1>{coworkingSpace.name}&lsquo;s Reservations</h1>
       <div className="mx-auto max-w-5xl rounded-3xl border p-8">
         <Suspense fallback={<ReserveTableSkeleton />}>
-          <ReserveTable {...{ id, page, limit, min, max, status, session, coworkingSpace }} />
+          <ReserveTable
+            {...{ id, page, limit, min, max, status, session, coworkingSpace }}
+            privilege={coworkingSpace.privilage}
+          />
         </Suspense>
       </div>
     </main>
