@@ -6,7 +6,7 @@ const CoWorkingSpace = require("../models/CoWorkingSpace");
 //@route    GET /api/v1/reservations
 //@access   Public
 exports.getReservations = async (req, res, next) => {
-  await mongoose.connect(process.env.MONGO_URI);
+  await mongoose.connect(process.env.MONGODB_URI);
   let query;
 
   //General users can see only their reservations!
@@ -52,7 +52,7 @@ exports.getReservations = async (req, res, next) => {
 //@route    GET /api/v1/reservations/:id
 //@access   Public
 exports.getReservation = async (req, res, next) => {
-  await mongoose.connect(process.env.MONGO_URI);
+  await mongoose.connect(process.env.MONGODB_URI);
   try {
     const reservation = await Reservation.findById(req.params.id).populate({
       path: "coWorkingSpace",
@@ -72,9 +72,7 @@ exports.getReservation = async (req, res, next) => {
     });
   } catch (error) {
     console.log(error);
-    return res
-      .status(500)
-      .json({ success: false, message: "Cannot find Reservation" });
+    return res.status(500).json({ success: false, message: "Cannot find Reservation" });
   }
 };
 
@@ -82,13 +80,11 @@ exports.getReservation = async (req, res, next) => {
 //@route    POST /api/v1/co-working-space/:coWorkingSpaceId/reservation
 //@access   Private
 exports.addReservation = async (req, res, next) => {
-  await mongoose.connect(process.env.MONGO_URI);
+  await mongoose.connect(process.env.MONGODB_URI);
   try {
     req.body.coWorkingSpace = req.params.coWorkingSpaceId;
 
-    const coWorkingSpace = await CoWorkingSpace.findById(
-      req.params.coWorkingSpaceId
-    );
+    const coWorkingSpace = await CoWorkingSpace.findById(req.params.coWorkingSpaceId);
 
     if (!coWorkingSpace) {
       return res.status(404).json({
@@ -120,9 +116,7 @@ exports.addReservation = async (req, res, next) => {
   } catch (error) {
     console.log(error);
 
-    return res
-      .status(500)
-      .json({ success: false, message: "Cannot create Reservation" });
+    return res.status(500).json({ success: false, message: "Cannot create Reservation" });
   }
 };
 
@@ -130,7 +124,7 @@ exports.addReservation = async (req, res, next) => {
 //@route    PUT /api/v1/reservations/:id
 //@access   Private
 exports.updateReservation = async (req, res, next) => {
-  await mongoose.connect(process.env.MONGO_URI);
+  await mongoose.connect(process.env.MONGODB_URI);
   try {
     let reservation = await Reservation.findById(req.params.id);
 
@@ -142,10 +136,7 @@ exports.updateReservation = async (req, res, next) => {
     }
 
     //Make sure user is the reservation owner
-    if (
-      reservation.user.toString() !== req.user.id &&
-      req.user.role !== "admin"
-    ) {
+    if (reservation.user.toString() !== req.user.id && req.user.role !== "admin") {
       return res.status(401).json({
         success: false,
         message: `User ${req.user.id} is not authorized to update this reservation`,
@@ -163,9 +154,7 @@ exports.updateReservation = async (req, res, next) => {
   } catch (error) {
     console.log(err.stack);
 
-    return res
-      .status(500)
-      .json({ success: false, message: "Cannot update Reservation" });
+    return res.status(500).json({ success: false, message: "Cannot update Reservation" });
   }
 };
 
@@ -173,7 +162,7 @@ exports.updateReservation = async (req, res, next) => {
 //@route    DELETE /api/v1/reservations/:id
 //@access   Private
 exports.deleteReservation = async (req, res, next) => {
-  await mongoose.connect(process.env.MONGO_URI);
+  await mongoose.connect(process.env.MONGODB_URI);
   try {
     const reservation = await Reservation.findById(req.params.id);
 
@@ -185,10 +174,7 @@ exports.deleteReservation = async (req, res, next) => {
     }
 
     //Make sure user is the reservation owner
-    if (
-      reservation.user.toString() !== req.user.id &&
-      req.user.role !== "admin"
-    ) {
+    if (reservation.user.toString() !== req.user.id && req.user.role !== "admin") {
       return res.status(401).json({
         success: false,
         message: `User ${req.user.id} is not authorized to delete this reservation`,
@@ -201,8 +187,6 @@ exports.deleteReservation = async (req, res, next) => {
   } catch (error) {
     console.log(error);
 
-    return res
-      .status(500)
-      .json({ success: false, message: "Cannot delete Reservation" });
+    return res.status(500).json({ success: false, message: "Cannot delete Reservation" });
   }
 };
