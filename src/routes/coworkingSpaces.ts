@@ -1,33 +1,23 @@
-import express from "express";
+import { Router } from "express";
+import { protect, authorize, readToken } from "../middleware.js";
+import {
+  createCoWorkingSpace,
+  deleteCoWorkingSpace,
+  getCoWorkingSpace,
+  getCoWorkingSpaces,
+  updateCoWorkingSpace,
+} from "../controllers/coworkingSpace.js";
 
-// const {
-//   getCoWorkingSpaces,
-//   getCoWorkingSpace,
-//   createCoWorkingSpace,
-//   updateCoWorkingSpace,
-//   deleteCoWorkingSpace,
-// } = require("../controllers/co-working-spaces");
+const router = Router();
 
-// const reservationRouter = require("./reservations");
+router.route("/").get(readToken, getCoWorkingSpaces).post(readToken, protect, createCoWorkingSpace);
+router
+  .route("/:id")
+  .get(readToken, getCoWorkingSpace)
+  .put(readToken, protect, updateCoWorkingSpace)
+  .delete(readToken, protect, deleteCoWorkingSpace);
 
-// const router = express.Router();
-
-// const { protect, authorize } = require("../middleware/auth");
-
-//Re-route into other resource routers
-// router.use("/:coWorkingSpaceId/reservations/", reservationRouter);
-
-// router
-//   .route("/")
-//   .get(getCoWorkingSpaces)
-//   .post(protect, authorize("admin"), createCoWorkingSpace);
-// router
-//   .route("/:id")
-//   .get(getCoWorkingSpace)
-//   .put(protect, authorize("admin"), updateCoWorkingSpace)
-//   .delete(protect, authorize("admin"), deleteCoWorkingSpace);
-
-// module.exports = router;
+export default router;
 
 /**
  * @swagger

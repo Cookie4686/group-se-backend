@@ -5,8 +5,12 @@ const ReservationSchema = new mongoose.Schema({
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
     personCount: { type: Number, required: true },
-    approvalStatus: { type: String, enum: ["pending", "canceled", "approved", "rejected"], default: "pending" },
+    approvalStatus: {
+        type: String,
+        enum: ["pending", "canceled", "approved", "rejected"],
+        default: "pending",
+    },
     createdAt: { type: Date, default: Date.now },
-});
+}, { toJSON: { virtuals: true }, toObject: { virtuals: true } });
 const model = mongoose.model("Reservation", ReservationSchema);
 export default model;

@@ -9,6 +9,7 @@ import hpp from "hpp";
 import cors from "cors";
 
 import authRouter from "./routes/auth.js";
+import coworkingSpaceRouter from "./routes/coworkingSpaces.js";
 // import coWorkingSpaces from "@/routes/co-working-spaces.js";
 // const reservations = require("../routes/reservations");
 
@@ -37,7 +38,7 @@ app.get("/", (_, res) => {
   res.send("Co-Working Space API is running!");
 });
 app.use("/api/v1/auth", authRouter);
-// app.use("/api/v1/co-working-spaces", coWorkingSpaces);
+app.use("/api/v1/coworkingSpaces", coworkingSpaceRouter);
 // app.use("/api/v1/reservations", reservations);
 
 const PORT = Number(process.env.PORT) || 3000;

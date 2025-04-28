@@ -24,7 +24,7 @@ const UserSchema = new mongoose.Schema({
     resetPasswordToken: String,
     resetPasswordExpire: Date,
     createdAt: { type: Date, default: Date.now },
-});
+}, { toJSON: { virtuals: true }, toObject: { virtuals: true } });
 UserSchema.pre("save", async function () {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);

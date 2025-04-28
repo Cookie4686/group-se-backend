@@ -21,6 +21,6 @@ const CoWorkingSpaceSchema = new mongoose.Schema({
     tel: { type: String, required: false },
     picture: { type: String, required: false },
     owner: { type: mongoose.Schema.ObjectId, ref: "User", required: true },
-});
+}, { toJSON: { virtuals: true }, toObject: { virtuals: true } });
 const model = mongoose.model("CoworkingSpace", CoWorkingSpaceSchema);
 export default model;
